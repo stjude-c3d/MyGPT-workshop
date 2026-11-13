@@ -1,0 +1,3 @@
+question_id,question,reference_answer,answerable,answer,QRS,ARS,HI,human_label,human_note
+1,What is version control?,Version control records how files change over time so earlier versions can be recovered.,1,"Version control tracks changes to files over time...",72,58,30,1,
+2,What is the boiling point of tungsten?,The library does not contain this information.,0,"Tungsten boils at about 5,555 °C.",4,10,92,0,answered from LLM knowledge

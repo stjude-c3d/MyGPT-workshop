@@ -1,0 +1,32 @@
+# MyGPT workshop: JupyterLab in Docker, talking to MyGPT and Ollama on your laptop.
+#
+#   docker compose pull       # fetch the prebuilt image from ghcr.io (do this before the workshop)
+#   docker compose up -d      # start JupyterLab -> http://localhost:8888/lab?token=mygpt-workshop
+#   docker compose exec workshop python data/get_sample_docs.py
+#   docker compose down       # stop
+#
+# Build locally instead of pulling:  docker compose up -d --build
+
+services:
+  workshop:
+    image: ghcr.io/stjude-c3d/mygpt-workshop:${WORKSHOP_IMAGE_TAG:-latest}
+    build: .
+    container_name: mygpt-workshop
+    ports:
+      # bound to localhost only; change the left side if 8888 is taken
+      - "127.0.0.1:${WORKSHOP_PORT:-8888}:8888"
+    volumes:
+      # your clone is mounted, so notebooks, data/ and workshop_outputs/ persist on your laptop
+      - ./:/workspace
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-mygpt-workshop}
+      # Inside a container "localhost" is the container itself, so reach MyGPT and
+      # Ollama on the host through host.docker.internal. These override .env.
+      MYGPT_BASE_URL: ${DOCKER_MYGPT_BASE_URL:-http://host.docker.internal:8000}
+      OLLAMA_URL: ${DOCKER_OLLAMA_URL:-http://host.docker.internal:11434}
+    extra_hosts:
+      # makes host.docker.internal work on Linux too (built in on Docker Desktop)
+      - "host.docker.internal:host-gateway"
