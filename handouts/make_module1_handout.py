@@ -12,137 +12,14 @@ from pathlib import Path
 
 from PIL import Image
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import (
-    Flowable,
-    Image as RLImage,
-    KeepTogether,
-    PageBreak,
-    Paragraph,
-    SimpleDocTemplate,
-    Spacer,
-    Table,
-    TableStyle,
-)
+from reportlab.platypus import Image as RLImage, KeepTogether, PageBreak, Spacer, Table, TableStyle
 
-ROOT = Path(__file__).resolve().parents[1]
+from handout_kit import (BLUE, CONTENT_W, INK, MUTED, ORANGE, ROOT, RULE, TEAL, TINT, Box, P, build,
+                         grid, make_chrome, section, write_lines)
+
 OUT = Path(__file__).resolve().parent / "module1_handout.pdf"
-
-# MyGPT figure palette
-BLUE = colors.HexColor("#1170B8")
-ORANGE = colors.HexColor("#E8762D")
-TEAL = colors.HexColor("#0E9E8B")
-INK = colors.HexColor("#1F2328")
-MUTED = colors.HexColor("#5A6270")
-RULE = colors.HexColor("#C9CED6")
-TINT = colors.HexColor("#F2F5F8")
-WRITE = colors.HexColor("#FFFFFF")
-
-W, H = letter
-MARGIN = 0.5 * inch
-CONTENT_W = W - 2 * MARGIN
-
-# ----------------------------------------------------------------------------- styles
-base = dict(fontName="Helvetica", fontSize=8.6, leading=11, textColor=INK)
-S = {
-    "body": ParagraphStyle("body", **base),
-    "small": ParagraphStyle("small", **{**base, "fontSize": 7.6, "leading": 9.4, "textColor": MUTED}),
-    "cell": ParagraphStyle("cell", **{**base, "fontSize": 7.8, "leading": 9.6}),
-    "cellb": ParagraphStyle("cellb", **{**base, "fontName": "Helvetica-Bold", "fontSize": 7.8, "leading": 9.6}),
-    "head": ParagraphStyle("head", **{**base, "fontName": "Helvetica-Bold", "fontSize": 7.6,
-                                      "leading": 9.4, "textColor": colors.white}),
-    "h2": ParagraphStyle("h2", **{**base, "fontName": "Helvetica-Bold", "fontSize": 11, "leading": 14,
-                                  "spaceBefore": 5, "spaceAfter": 2}),
-    "mono": ParagraphStyle("mono", **{**base, "fontName": "Courier", "fontSize": 8, "leading": 10}),
-    "center": ParagraphStyle("center", **{**base, "alignment": TA_CENTER, "fontSize": 7.6, "leading": 9.4}),
-}
-
-
-class Box(Flowable):
-    """Empty tick box drawn as a square (the built-in fonts have no hollow-box glyph)."""
-
-    def __init__(self, size=7.5, color=INK):
-        super().__init__()
-        self.size, self.color = size, color
-        self.width = self.height = size
-
-    def draw(self):
-        self.canv.setStrokeColor(self.color)
-        self.canv.setLineWidth(0.8)
-        self.canv.rect(0, 0, self.size, self.size, stroke=1, fill=0)
-
-
-def P(text, style="body"):
-    return Paragraph(text, S[style])
-
-
-def section(title, color, minutes=None):
-    """Coloured section title with an optional time chip."""
-    label = f'<font color="{color.hexval().replace("0x", "#")}">■</font>&nbsp; {title}'
-    if minutes:
-        label += f'&nbsp;&nbsp;<font size="8" color="#5A6270">{minutes}</font>'
-    return P(label, "h2")
-
-
-def grid(data, widths, header_color=INK, zebra=False, row_h=None, write_cols=()):
-    t = Table(data, colWidths=widths, rowHeights=row_h, repeatRows=1)
-    style = [
-        ("BACKGROUND", (0, 0), (-1, 0), header_color),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("GRID", (0, 0), (-1, -1), 0.5, RULE),
-        ("LEFTPADDING", (0, 0), (-1, -1), 4),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-        ("TOPPADDING", (0, 0), (-1, -1), 1.8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 1.8),
-    ]
-    if zebra:
-        for r in range(2, len(data), 2):
-            style.append(("BACKGROUND", (0, r), (-1, r), TINT))
-    t.setStyle(TableStyle(style))
-    return t
-
-
-def write_lines(n, label=None, width=CONTENT_W):
-    """Ruled lines for handwriting."""
-    rows = [[P(label, "cellb")]] if label else []
-    rows += [[""] for _ in range(n)]
-    t = Table(rows, colWidths=[width], rowHeights=[None] * (1 if label else 0) + [15] * n)
-    t.setStyle(TableStyle([
-        ("LINEBELOW", (0, 1 if label else 0), (-1, -1), 0.5, RULE),
-        ("LEFTPADDING", (0, 0), (-1, -1), 0),
-    ]))
-    return t
-
-
-# ----------------------------------------------------------------------------- page chrome
-def chrome(canvas, doc):
-    canvas.saveState()
-    # top band
-    canvas.setFillColor(BLUE)
-    canvas.rect(0, H - 0.62 * inch, W, 0.62 * inch, stroke=0, fill=1)
-    canvas.setFillColor(ORANGE)
-    canvas.rect(0, H - 0.66 * inch, W * 0.42, 0.04 * inch, stroke=0, fill=1)
-    canvas.setFillColor(TEAL)
-    canvas.rect(W * 0.42, H - 0.66 * inch, W * 0.58, 0.04 * inch, stroke=0, fill=1)
-
-    canvas.setFillColor(colors.white)
-    canvas.setFont("Helvetica", 8)
-    canvas.drawString(MARGIN, H - 0.24 * inch, "KIDS26  ·  MyGPT WORKSHOP  ·  MODULE 1 OF 5")
-    canvas.setFont("Helvetica-Bold", 15)
-    canvas.drawString(MARGIN, H - 0.47 * inch, "Install MyGPT and build a library")
-    canvas.setFont("Helvetica-Bold", 11)
-    canvas.drawRightString(W - MARGIN, H - 0.47 * inch, "30 min")
-
-    # footer
-    canvas.setFillColor(MUTED)
-    canvas.setFont("Helvetica", 7)
-    canvas.drawString(MARGIN, 0.32 * inch,
-                      "github.com/stjude-c3d/MyGPT-workshop  ·  01-install-and-build-library/README.md")
-    canvas.drawRightString(W - MARGIN, 0.32 * inch, f"Page {doc.page} of 2")
-    canvas.restoreState()
+chrome = make_chrome(1, "Install MyGPT and build a library", 30, "01-install-and-build-library/README.md")
 
 
 # ----------------------------------------------------------------------------- page 1
@@ -337,12 +214,8 @@ def page2():
 
 
 def main():
-    doc = SimpleDocTemplate(str(OUT), pagesize=letter, leftMargin=MARGIN, rightMargin=MARGIN,
-                            topMargin=0.82 * inch, bottomMargin=0.5 * inch,
-                            title="MyGPT Workshop — Module 1 handout", author="MyGPT Workshop, KIDS26")
-    doc.build(page1() + [PageBreak()] + page2(), onFirstPage=chrome, onLaterPages=chrome)
+    build(OUT, page1() + [PageBreak()] + page2(), chrome, "MyGPT Workshop \u2014 Module 1 handout")
     (Path(__file__).resolve().parent / ".module1_pipeline.png").unlink(missing_ok=True)
-    print("wrote", OUT)
 
 
 if __name__ == "__main__":

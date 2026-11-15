@@ -8,7 +8,7 @@
 
 ## Before you start
 
-- Module 1 is done: `workshop-library` exists, MyGPT is running, and the BioASQ inputs
+- Module 1 is done: `workshop-library-A` exists, MyGPT is running, and the BioASQ inputs
    are available in `data/BioASQ/`.
 
 ### Start the workshop container
@@ -20,7 +20,7 @@ name and MyGPT credentials:
 cp .env.example .env
 ```
 
-Set `MYGPT_DATASET=workshop-library`, `MYGPT_USERNAME`, and `MYGPT_PASSWORD` in `.env`.
+Set `MYGPT_DATASET=workshop-library-A`, `MYGPT_USERNAME`, and `MYGPT_PASSWORD` in `.env`.
 Leave the URLs unchanged; `compose.yaml` uses `host.docker.internal` to reach MyGPT and
 Ollama on your laptop. Then pull and start the workshop container:
 
@@ -92,21 +92,21 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
 
    ```bash
    docker compose exec workshop python 02-query-via-api/scripts/query_library.py \
-         --questions data/BioASQ/questions_final.csv \
+         --questions data/BioASQ/questions_final_less.csv \
          --out workshop_outputs/02_query_results.csv
    ```
 
       This runs the 163 BioASQ test questions and may take a while. You can also open a
       **Terminal** in JupyterLab and run `python 02-query-via-api/...` directly.
 
-3. **Optional:** use `--dataset workshop-library-b` to rerun the batch on your module 1
+3. **Optional:** use `--dataset workshop-library-B` to rerun the batch on your module 1
    comparison library and compare the two CSVs.
 
 ## Checkpoint
 
-- [ ] `client.list_datasets()` shows `workshop-library`.
+- [ ] The notebook connects to `workshop-library-A` and `get_documents` lists its documents (397 BioASQ papers in the instructor run).
 - [ ] `workshop_outputs/02_query_results.csv` exists, with columns `QRS`, `ARS` and `HI`.
-- [ ] The off-topic control question has the lowest QRS in the batch.
+- [ ] You compared the off-topic control question with the on-topic ones. QRS alone may not flag it (the instructor run gave QRS 64, higher than some BioASQ questions); check HI and the answer text too.
 
 ## Troubleshooting
 

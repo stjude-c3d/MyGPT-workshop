@@ -1,4 +1,6 @@
-# MyGPT Workshop — KIDS26
+# MyGPT: Building your own RAG Swiss Army knife for reliable knowledge discovery
+
+*KIDS26 workshop · St. Jude Children's Research Hospital*
 
 Hands-on workshop material for **MyGPT**, St. Jude's open-source, privacy-first
 retrieval-augmented generation (RAG) platform, presented at the KIDS26 conference.
