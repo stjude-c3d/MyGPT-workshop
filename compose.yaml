@@ -2,7 +2,7 @@
 #
 #   docker compose pull       # fetch the prebuilt image from ghcr.io (do this before the workshop)
 #   docker compose up -d      # start JupyterLab -> http://localhost:8888/lab?token=mygpt-workshop
-#   docker compose exec workshop python data/get_sample_docs.py
+#   clone the BioASQ inputs as described in 01-install-and-build-library/README.md
 #   docker compose down       # stop
 #
 # Build locally instead of pulling:  docker compose up -d --build

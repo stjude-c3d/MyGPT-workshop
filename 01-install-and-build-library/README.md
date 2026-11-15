@@ -8,12 +8,85 @@
 
 ## Before you start
 
-- You have finished [SETUP.md](../SETUP.md) steps 1–3: Docker running, models pulled,
-  superuser created.
-- You have 5–20 documents in `data/my_docs/`, or you ran
-  `docker compose exec workshop python data/get_sample_docs.py`.
-- The workshop container is running (`docker compose up -d`). You won't use it until
-  module 2, but starting it now catches problems early.
+Finish the prerequisites in [SETUP.md](../SETUP.md), then install MyGPT, start the
+workshop container, and prepare documents as described below.
+
+### Install MyGPT
+
+Follow the MyGPT installation guide for your OS, using the **pre-built images** option:
+
+- macOS: <https://github.com/stjude/MyGPT/blob/main/installation/macOS/README.md>
+- Linux: <https://github.com/stjude/MyGPT/blob/main/installation/linux/README.md>
+- Windows: <https://github.com/stjude/MyGPT/blob/main/installation/windows/README.md>
+
+Create a backend user for signing in to MyGPT and the API in modules 2–4:
+
+```bash
+cd MyGPT/installation/macOS/prebuilt_images   # use your OS folder
+bash create_superuser.sh
+```
+
+Check that the username and password work at <http://localhost:8000/admin/>.
+
+### Start the workshop container
+
+Clone this repository, then create the environment file, pull the prebuilt image, and
+start the container:
+
+```bash
+git clone https://github.com/stjude-c3d/MyGPT-workshop.git
+cd MyGPT-workshop
+cp .env.example .env
+docker compose pull
+docker compose up -d
+```
+
+Edit `.env` and set `MYGPT_USERNAME` and `MYGPT_PASSWORD` to the backend user you just
+created. Leave the URLs alone. `compose.yaml` uses `host.docker.internal` so the
+container can reach MyGPT and Ollama on your laptop.
+
+Open JupyterLab at <http://localhost:8888/lab?token=mygpt-workshop>. Your clone is
+mounted at `/workspace`, so saved notebooks, data, and `workshop_outputs/` stay on your
+laptop after the container stops.
+
+| Task | Command |
+|---|---|
+| Start / stop | `docker compose up -d` / `docker compose down` |
+| Run a script in the container | `docker compose exec workshop python <script>` |
+| Shell in the container | `docker compose exec workshop bash` |
+| Logs | `docker compose logs workshop` |
+| Port 8888 already in use | `WORKSHOP_PORT=8890 docker compose up -d` |
+
+### Prepare documents
+
+Use the PDFs and test questions from the BioASQ dataset used in the MyGPT manuscript.
+From the workshop repository root, clone only its input directory:
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/stjude/MyGPT-evaluations.git data/MyGPT-evaluations
+git -C data/MyGPT-evaluations sparse-checkout set BioASQ/inputs
+```
+
+Upload the PDFs in `data/MyGPT-evaluations/BioASQ/inputs/pdfs/` when creating your
+library. The test questions are in
+`data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv`.
+
+Choose an embedding model you pulled in [SETUP.md](../SETUP.md) under **Upload →
+Advanced** when creating the library. It can't be changed after the library is built.
+
+### Alternative: local Python
+
+If you can't run the workshop container, use a virtual environment with Python 3.10+.
+Outside Docker, the `localhost` URLs in `.env` are correct as they are.
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.lock
+jupyter lab
+```
+
+Wherever the module READMEs say `docker compose exec workshop python …`, run `python …`
+instead.
 
 | Time | Activity |
 |---|---|
@@ -67,6 +140,14 @@ curl -s http://localhost:11434     # "Ollama is running"
 ollama list                        # nomic-embed-text and llama3 (or gpt-oss) listed
 ```
 
+Check that the workshop client can reach MyGPT:
+
+```bash
+docker compose exec workshop python -c "from common.mygpt_client import MyGPTClient; c = MyGPTClient.from_env(); print(c.list_datasets())"
+```
+
+An empty list `[]` is ready; a connection error means MyGPT isn't running.
+
 Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 <http://localhost:3000> or <http://localhost>) and sign in.
 
@@ -76,11 +157,12 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 2. Name it `workshop-library`. This must match `MYGPT_DATASET` in `.env`.
 3. Choose **Advanced settings** and use the baseline values:
    - Chunking: fixed-size, **1000** characters, overlap **200**
-   - Embedding model: **nomic-embed-text**
+   - Embedding model: **nomic-embed-text** (or **bge-m3** if you pulled it and want to
+     use that instead)
    - BM25: **on**, reranker: **off**
 4. Upload your documents and wait until indexing finishes.
-5. Ask 3 questions from [`data/sample_questions.csv`](../data/sample_questions.csv), or
-   your own. Note the QRS, ARS and HI for each.
+5. Ask 3 questions from `data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv`, or
+  your own. Note the QRS, ARS and HI for each.
 
 ### Step 3 — Settings experiment (13 min)
 

@@ -6,6 +6,5 @@
 **/.ipynb_checkpoints
 .DS_Store
 workshop_outputs
-data/sample_docs
-data/my_docs
 data/fallback
+data/MyGPT-evaluations

@@ -4,7 +4,7 @@
 Examples (run from the repo root):
     python 02-query-via-api/scripts/query_library.py --list
     python 02-query-via-api/scripts/query_library.py --question "What is version control?"
-    python 02-query-via-api/scripts/query_library.py --questions data/sample_questions.csv \
+    python 02-query-via-api/scripts/query_library.py --questions data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv \
         --out workshop_outputs/02_query_results.csv
 
 Connection settings come from .env (see .env.example); flags override them.
@@ -25,7 +25,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--list", action="store_true", help="list libraries and exit")
     p.add_argument("--question", help="ask a single question")
-    p.add_argument("--questions", help="CSV with a 'question' column")
+    p.add_argument("--questions", help="CSV with a 'question' or 'questions' column")
     p.add_argument("--dataset", help="library name (default: MYGPT_DATASET)")
     p.add_argument("--max-chunks", type=int, default=5)
     p.add_argument("--no-score", action="store_true", help="skip ARS/HI scoring")
@@ -44,7 +44,14 @@ def main() -> None:
     if args.question:
         questions = [args.question]
     elif args.questions:
-        questions = pd.read_csv(args.questions)["question"].dropna().tolist()
+        questions_frame = pd.read_csv(args.questions)
+        question_column = next(
+            (column for column in ("question", "questions") if column in questions_frame),
+            None,
+        )
+        if question_column is None:
+            p.error("questions CSV must contain a 'question' or 'questions' column")
+        questions = questions_frame[question_column].dropna().tolist()
     else:
         p.error("use --list, --question or --questions")
 

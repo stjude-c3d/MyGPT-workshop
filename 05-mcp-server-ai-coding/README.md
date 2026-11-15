@@ -13,9 +13,18 @@ corpus is CC-BY-4.0, pinned to one commit).
 
 ## Before you start
 
-- You did [SETUP.md](../SETUP.md) step 6: `KIDS26-Team20` cloned, `uv sync` run, and
-  `doctor` checked.
-- VS Code with GitHub Copilot Chat, signed in, with **Agent** mode available.
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and
+   [VS Code](https://code.visualstudio.com/), then sign in to GitHub Copilot Chat with
+   **Agent** mode available.
+- Clone and prepare the Turing Way MCP repository:
+
+   ```bash
+   git clone https://github.com/stjude-biohackathon/KIDS26-Team20.git
+   cd KIDS26-Team20
+   uv sync --extra dev --frozen
+   uv run python scripts/project.py doctor
+   ```
+
 - **Optional, for full RAG:** Docker Desktop running (from module 1).
 
 | Time | Activity |

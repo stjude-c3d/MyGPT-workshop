@@ -48,11 +48,12 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
 
    ```bash
    docker compose exec workshop python 02-query-via-api/scripts/query_library.py \
-          --questions data/sample_questions.csv --out workshop_outputs/02_query_results.csv
+         --questions data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv \
+         --out workshop_outputs/02_query_results.csv
    ```
 
-   You can also open a **Terminal** in JupyterLab and run `python 02-query-via-api/...`
-   directly.
+      This runs the 163 BioASQ test questions and may take a while. You can also open a
+      **Terminal** in JupyterLab and run `python 02-query-via-api/...` directly.
 
 3. **Optional:** use `--dataset workshop-library-b` to rerun the batch on your module 1
    comparison library and compare the two CSVs.
