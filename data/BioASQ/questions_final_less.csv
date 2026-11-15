@@ -1,0 +1,26 @@
+bioasq_id,questions,ground_truth
+67fc20ee18b1e36f2e00012a,Do glioblastoma tumors have a high degree of lymphocyte infiltration?,no
+67ed650c18b1e36f2e0000fe,Has any single infectious agent been identified as the cause of irritable bowel syndrome?,no
+67daf71018b1e36f2e000057,Is pollinosis another name for allergies to tree or grass pollen?,yes
+67d4903418b1e36f2e000018,Which gene shapes the 3D enhancer network of the developing T cell genome?,[['SATB1']]
+67f6f14118b1e36f2e000100,Do mesenchymal-like glioblastoma cells show increased immune evasion?,yes
+67fc546c18b1e36f2e000130,Has Antibiotic use induced hiccups?,yes
+67d6c10618b1e36f2e000027,Is the use of surfactant restricted to neonatology?,no
+67d497c418b1e36f2e00001a,What's the effect of liver RBFOX2?,[['Liver RBFOX2 regulates cholesterol homeostasis via Scarb1 alternative splicing in mice.']]
+67da131f18b1e36f2e000053,Is there a shift in the cell states of glioblastoma during recurrence?,yes
+67f8ea8318b1e36f2e000107,What is the difference in action between fomoterol and salmeterol?,"[['Formoterol has a faster onset of action compared with salmeterol', 'formoterol is a full beta2-adrenergic agonist, whereas salmeterol is a partial agonist at the beta2-adrenoceptor']]"
+67d7fe1718b1e36f2e000043,Vector of dengue infection.,"[['Aedes aegypti mosquitos', 'Aedes albopictus', 'Mosquitos']]"
+67dedd6818b1e36f2e000061,Which ensemble machine-learning framework has been developed harnessing UK biobank data?,"[['MILTON', 'Machine learning with phenotype associations']]"
+67fd5d6e18b1e36f2e000139,What is a frequently lost chromosomal region in secondary glioblastoma?,"[['Chromosome 10q', '10q', 'loss of chromosome 10q', 'LOH on 10q']]"
+67fc2f7818b1e36f2e00012c,Does PTEN loss in GBM contribute to resistance against immunotherapy?,yes
+67cf221a81b1027333000022,What tissue would be used to derive  Wharton's Jelly Mesenchymal Stem Cells?,[['Human umbilical cord (hUC)']]
+67e5557c18b1e36f2e0000ac,What is the target of fezolinetant?,[['neurokinin 3 receptor']]
+67cdc78381b102733300001a,What age group is commonly affected by biliary atresia?,"[['infants', 'neonates', 'newborns', 'babies']]"
+680a078618b1e36f2e000146,Are microglia derived from the same lineage as peripheral macrophages?,no
+680a21eb18b1e36f2e000150,What glial cells are responsible for myelination in the CNS?,"[['Oligodendrocytes', 'Oligodendrocytes (OLs)', 'OLs', 'oligodendrocyte lineage cells', 'Oligodendroglial cells']]"
+67e270d318b1e36f2e000075,Most common infectious cause of congenital deafness.,"[['CMV infection during pregnancy', 'rubella']]"
+67fe5f0918b1e36f2e000144,What is the previous acronym for Metabolic Dysfunction-Associated Steatotic Liver Diasease  (MASLD)?,"[['NAFLD', 'NASH', 'MASH']]"
+6810c27b353a4a2e6b000010,Can sertraline be used in children under 10?,yes
+67e1356018b1e36f2e000070,Where in the body would the  sublci and gyri be found?,[['brain']]
+67fce47a18b1e36f2e000136,Does neuroblastoma share mesenchymal-like transcriptional programs with triple-negative breast cancer (TNBC)?,yes
+67e7df6118b1e36f2e0000d8,Which database serves as a catalogue of full-length 16S rRNA gene sequences from bacteria in wastewater treatment plants?,[['MiDAS 4']]

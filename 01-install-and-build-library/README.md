@@ -100,9 +100,8 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 1. Click **Upload / Create library**.
 2. Name it `workshop-library-A`; module 2 will use this name in `.env`.
 3. Choose **Advanced settings** and use the baseline values:
-   - Chunking: fixed-size, **1000** characters, overlap **200**
-   - Embedding model: **nomic-embed-text** (or **bge-m3** if you pulled it and want to
-     use that instead)
+   - Chunking: fixed-size, **1000** characters, overlap **Yes**
+   - Embedding model: **nomic-embed-text**
    - BM25: **on**, reranker: **qnli-electra-base (default)**
 4. Upload your documents and wait until indexing finishes.
 5. Ask 3 questions from `data/BioASQ/questions_final.csv`, or
