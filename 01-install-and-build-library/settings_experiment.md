@@ -6,14 +6,14 @@ compare results at the end.
 
 | Experiment | Library A (baseline) | Library B (changed) | What to look for |
 |---|---|---|---|
-| Chunk size | 1000 / overlap 200 | 300 / overlap 50 | Do precise facts get higher QRS? Are answers more fragmented? |
-| Overlap | 1000 / overlap 200 | 1000 / overlap 0 | Are answers that span two chunks now incomplete? |
-| Embedding model | nomic-embed-text | bge-m3 or MedCPT | Change in QRS for domain terms |
+| Chunk size | 1000 | 750 | Do precise facts get higher QRS? Are answers more fragmented? |
+| Overlap | YES | NO | Are answers that span two chunks now incomplete? |
+| Embedding model | nomic-embed-text | bge-m3 | Change in QRS for domain terms |
 | Keyword search | BM25 on | BM25 off | Questions with IDs, gene names or acronyms |
 | Reranker | off | on | Source order, answer quality, latency |
 | Max chunks (chat setting, no rebuild needed) | 5 | 10 | Longer answers? More noise? Change in ARS? |
 
-Name Library B `workshop-library-b`, or add the setting to the name, e.g. `workshop-chunk300`.
+Name Library B `workshop-library-B`, or add the setting to the name, e.g. `workshop-chunk750`.
 
 ## Results
 

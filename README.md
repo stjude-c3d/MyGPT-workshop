@@ -53,7 +53,7 @@ MyGPT-workshop/
 ├── .env.example                 # copy to .env and fill in
 ├── .github/workflows/           # builds and publishes the image to ghcr.io
 ├── common/mygpt_client.py       # shared MyGPT REST client used by modules 2–4
-├── data/                        # ignored local BioASQ inputs and runtime fallback cache
+├── data/                        # BioASQ inputs (excluded from Docker image) and fallback cache
 ├── 01-install-and-build-library/
 ├── 02-query-via-api/
 ├── 03-build-evaluation-dataset/
@@ -66,19 +66,12 @@ start → Concepts → Hands-on → Checkpoint → Troubleshooting → Going fur
 
 ## Quick start
 
-The workshop runs in Docker, the same way MyGPT does, so everyone has an identical
-environment. MyGPT and Ollama run on your laptop; JupyterLab runs in the
+Start with [Module 1](01-install-and-build-library/README.md) to install MyGPT and
+build the library. JupyterLab is first needed in module 2; follow its
+[container setup](02-query-via-api/README.md#start-the-workshop-container) then.
+
+MyGPT and Ollama run on your laptop; JupyterLab runs in the
 `ghcr.io/stjude-c3d/mygpt-workshop` container and talks to them.
-
-```bash
-git clone https://github.com/stjude-c3d/MyGPT-workshop.git
-cd MyGPT-workshop
-cp .env.example .env                 # then edit .env
-docker compose pull                  # prebuilt image from ghcr.io
-docker compose up -d
-```
-
-Open <http://localhost:8888/lab?token=mygpt-workshop>.
 
 ```
 your laptop
@@ -87,7 +80,7 @@ your laptop
 └── mygpt-workshop (Docker)  :8888  ───┘  JupyterLab, your clone mounted at /workspace
 ```
 
-Can't use Docker? See [Module 1 → Alternative: local Python](01-install-and-build-library/README.md#alternative-local-python).
+Can't use Docker? See [Module 2 → Alternative: local Python](02-query-via-api/README.md#alternative-local-python).
 
 ## Image maintenance
 

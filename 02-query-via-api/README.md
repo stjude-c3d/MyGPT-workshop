@@ -8,10 +8,52 @@
 
 ## Before you start
 
-- Module 1 is done: `workshop-library` exists and `.env` has `MYGPT_DATASET`,
-  `MYGPT_USERNAME` and `MYGPT_PASSWORD` set.
-- The workshop container is running (`docker compose up -d`) and JupyterLab is open at
-  <http://localhost:8888/lab?token=mygpt-workshop>.
+- Module 1 is done: `workshop-library` exists, MyGPT is running, and the BioASQ inputs
+   are available in `data/BioASQ/`.
+
+### Start the workshop container
+
+From the workshop repository root, create the environment file and set the library
+name and MyGPT credentials:
+
+```bash
+cp .env.example .env
+```
+
+Set `MYGPT_DATASET=workshop-library`, `MYGPT_USERNAME`, and `MYGPT_PASSWORD` in `.env`.
+Leave the URLs unchanged; `compose.yaml` uses `host.docker.internal` to reach MyGPT and
+Ollama on your laptop. Then pull and start the workshop container:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Open JupyterLab at <http://localhost:8888/lab?token=mygpt-workshop>. The repository is
+mounted at `/workspace`, so notebooks, data, and `workshop_outputs/` persist on your
+laptop.
+
+| Task | Command |
+|---|---|
+| Start / stop | `docker compose up -d` / `docker compose down` |
+| Run a script in the container | `docker compose exec workshop python <script>` |
+| Shell in the container | `docker compose exec workshop bash` |
+| Logs | `docker compose logs workshop` |
+| Port 8888 already in use | `WORKSHOP_PORT=8890 docker compose up -d` |
+
+### Alternative: local Python
+
+If you can't run the workshop container, use Python 3.10+ in a virtual environment.
+The default `localhost` URLs in `.env` are correct outside Docker.
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\\Scripts\\activate
+pip install -r requirements.lock
+jupyter lab
+```
+
+Wherever the module READMEs say `docker compose exec workshop python …`, run `python …`
+instead.
 
 | Time | Activity |
 |---|---|
@@ -48,7 +90,7 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
 
    ```bash
    docker compose exec workshop python 02-query-via-api/scripts/query_library.py \
-         --questions data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv \
+         --questions data/BioASQ/questions_final.csv \
          --out workshop_outputs/02_query_results.csv
    ```
 

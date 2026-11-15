@@ -8,8 +8,8 @@
 
 ## Before you start
 
-Finish the prerequisites in [SETUP.md](../SETUP.md), then install MyGPT, start the
-workshop container, and prepare documents as described below.
+Finish the prerequisites in [SETUP.md](../SETUP.md), then install MyGPT and prepare
+the BioASQ documents as described below.
 
 ### Install MyGPT
 
@@ -28,65 +28,23 @@ bash create_superuser.sh
 
 Check that the username and password work at <http://localhost:8000/admin/>.
 
-### Start the workshop container
+### Get the workshop files
 
-Clone this repository, then create the environment file, pull the prebuilt image, and
-start the container:
+Clone this repository so you can access the BioASQ inputs and workshop materials:
 
 ```bash
 git clone https://github.com/stjude-c3d/MyGPT-workshop.git
 cd MyGPT-workshop
-cp .env.example .env
-docker compose pull
-docker compose up -d
 ```
-
-Edit `.env` and set `MYGPT_USERNAME` and `MYGPT_PASSWORD` to the backend user you just
-created. Leave the URLs alone. `compose.yaml` uses `host.docker.internal` so the
-container can reach MyGPT and Ollama on your laptop.
-
-Open JupyterLab at <http://localhost:8888/lab?token=mygpt-workshop>. Your clone is
-mounted at `/workspace`, so saved notebooks, data, and `workshop_outputs/` stay on your
-laptop after the container stops.
-
-| Task | Command |
-|---|---|
-| Start / stop | `docker compose up -d` / `docker compose down` |
-| Run a script in the container | `docker compose exec workshop python <script>` |
-| Shell in the container | `docker compose exec workshop bash` |
-| Logs | `docker compose logs workshop` |
-| Port 8888 already in use | `WORKSHOP_PORT=8890 docker compose up -d` |
 
 ### Prepare documents
 
-Use the PDFs and test questions from the BioASQ dataset used in the MyGPT manuscript.
-From the workshop repository root, clone only its input directory:
-
-```bash
-git clone --filter=blob:none --sparse https://github.com/stjude/MyGPT-evaluations.git data/MyGPT-evaluations
-git -C data/MyGPT-evaluations sparse-checkout set BioASQ/inputs
-```
-
-Upload the PDFs in `data/MyGPT-evaluations/BioASQ/inputs/pdfs/` when creating your
-library. The test questions are in
-`data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv`.
+The BioASQ PDFs and test questions are included in `data/BioASQ/`. Upload the PDFs in
+`data/BioASQ/pdfs/` when creating your library. The test questions are in
+`data/BioASQ/questions_final.csv`.
 
 Choose an embedding model you pulled in [SETUP.md](../SETUP.md) under **Upload →
 Advanced** when creating the library. It can't be changed after the library is built.
-
-### Alternative: local Python
-
-If you can't run the workshop container, use a virtual environment with Python 3.10+.
-Outside Docker, the `localhost` URLs in `.env` are correct as they are.
-
-```bash
-python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.lock
-jupyter lab
-```
-
-Wherever the module READMEs say `docker compose exec workshop python …`, run `python …`
-instead.
 
 | Time | Activity |
 |---|---|
@@ -99,20 +57,14 @@ instead.
 
 MyGPT has three parts: a **React UI**, a **Django backend** that does chunking,
 embedding, retrieval and scoring, and an **Ollama LLM server**. Building a library
-runs this pipeline once per document:
+runs a document through the retrieval pipeline. At question time, MyGPT retrieves
+relevant chunks, generates an answer, and scores its relevance and hallucination risk.
 
-```
-document ─► text extraction ─► chunking ─► embedding ─► vector DB (Chroma) + BM25 index
-```
-
-At question time:
-
-```
-question ─► semantic search + keyword (BM25) search ─► optional reranker ─► top-k chunks
-         ─► LLM answer ─► QRS (question relevance), ARS (answer relevance), HI (hallucination index)
-```
+![MyGPT document and question workflow](../images/mygpt_workflow.png)
 
 ### Pipeline settings and their effects
+
+![MyGPT workflow and customization settings](../images/workflow_and_customization.png)
 
 | Setting | Where | What it controls | Typical effect of changing it |
 |---|---|---|---|
@@ -135,18 +87,10 @@ The pre-calculated QC/AC cutoffs for each embedding model are in the
 ### Step 1 — Check the stack (5 min)
 
 ```bash
-docker ps                          # MyGPT frontend, backend, db + mygpt-workshop should be "Up"
+docker ps                          # MyGPT frontend, backend and database should be "Up"
 curl -s http://localhost:11434     # "Ollama is running"
 ollama list                        # nomic-embed-text and llama3 (or gpt-oss) listed
 ```
-
-Check that the workshop client can reach MyGPT:
-
-```bash
-docker compose exec workshop python -c "from common.mygpt_client import MyGPTClient; c = MyGPTClient.from_env(); print(c.list_datasets())"
-```
-
-An empty list `[]` is ready; a connection error means MyGPT isn't running.
 
 Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 <http://localhost:3000> or <http://localhost>) and sign in.
@@ -154,14 +98,14 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 ### Step 2 — Build a baseline library (10 min)
 
 1. Click **Upload / Create library**.
-2. Name it `workshop-library`. This must match `MYGPT_DATASET` in `.env`.
+2. Name it `workshop-library-A`; module 2 will use this name in `.env`.
 3. Choose **Advanced settings** and use the baseline values:
    - Chunking: fixed-size, **1000** characters, overlap **200**
    - Embedding model: **nomic-embed-text** (or **bge-m3** if you pulled it and want to
      use that instead)
-   - BM25: **on**, reranker: **off**
+   - BM25: **on**, reranker: **qnli-electra-base (default)**
 4. Upload your documents and wait until indexing finishes.
-5. Ask 3 questions from `data/MyGPT-evaluations/BioASQ/inputs/questions_final.csv`, or
+5. Ask 3 questions from `data/BioASQ/questions_final.csv`, or
   your own. Note the QRS, ARS and HI for each.
 
 ### Step 3 — Settings experiment (13 min)
@@ -172,9 +116,9 @@ Change one variable at a time, so any difference comes from that setting.
 
 ## Checkpoint
 
-- [ ] `workshop-library` appears on the MyGPT home page with all your documents.
+- [ ] `workshop-library-A` appears on the MyGPT home page with all your documents.
 - [ ] One on-topic question gives QRS > 50 and cites your documents.
-- [ ] One off-topic question (for example the tungsten question) gives low QRS and high HI.
+- [ ] One off-topic question gives low QRS and high HI. (e.g. Who are the keynote spearkers at the KIDS26 at St. Jude?)
 - [ ] Your worksheet table has at least one row comparing two settings.
 
 ## Troubleshooting

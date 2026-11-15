@@ -11,7 +11,7 @@
 
 - Modules 1–2 are done: the library exists and `client.ask()` works.
 - The BioASQ PDFs you uploaded for the library are in
-  `data/MyGPT-evaluations/BioASQ/inputs/pdfs/`, which the container can read. Notebook
+  `data/BioASQ/pdfs/`, which the container can read. Notebook
   03a uses this folder as `DOCS_DIR`.
 - **Behind or MyGPT not working?** Set `USE_FALLBACK = True` in notebook 3b. It uses the
   scored PubMedQA run from MyGPT-evaluations (294 questions with human correctness labels).
