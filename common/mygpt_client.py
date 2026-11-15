@@ -239,8 +239,9 @@ class MyGPTClient:
                     "ARS": s.get("relevance_score"),
                     "Asem": s.get("semantic_score"),
                     "Akey": s.get("keyword_score"),
-                    "HI": s.get("hallucination_index_by_equation"),
+                    "HI": s.get("hallucination_index_by_ml"),
                     "HI_ml": s.get("hallucination_index_by_ml"),
+                    "HI_equation": s.get("hallucination_index_by_equation"),
                 }
             )
         return row

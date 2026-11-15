@@ -77,7 +77,9 @@ script. These are the endpoints used here (full reference in
 | `POST /api/save_answer/` | Store an answer and score it | **ARS** (`relevance_score`), `hallucination_index_by_equation`, `hallucination_index_by_ml` |
 
 The shared helper [`common/mygpt_client.py`](../common/mygpt_client.py) wraps these
-calls. `client.ask(question)` runs all three steps and returns a single row of results.
+calls. `client.ask(question)` runs all three steps and returns a single row of results;
+`HI` uses `hallucination_index_by_ml`, while the equation-based value is available as
+`HI_equation`.
 
 ## Hands-on
 
