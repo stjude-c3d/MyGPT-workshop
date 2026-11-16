@@ -5,7 +5,8 @@
 
 Content mirrors 04-recalibrate-weights/README.md and 04_sensitivity_analysis.ipynb.
 The grey "instructor run" values come from 04_sensitivity_analysis_final.ipynb, run on
-the 23-question benchmark from module 3 (2 incorrect answers).
+the 03c calibration dataset: 163 BioASQ questions judged against ground truth, 53 incorrect.
+Attendees use the same 163 questions, so their values should be close.
 """
 
 from pathlib import Path
@@ -98,10 +99,11 @@ def page1():
                   ("15–20", "Apply + discuss", TEAL)])]
 
     setup = [
-        ("Benchmark from module 3", "<font face='Courier'>workshop_outputs/03_eval_dataset.csv</font> with a "
-                                    "<font face='Courier'>label</font> column"),
-        ("Enough incorrect answers", "About 20–25 labelled rows with at least <b>3–5 incorrect</b>; with fewer, "
-                                     "treat results as illustrative"),
+        ("Benchmark from module 3", "<font face='Courier'>03_calibration_eval_dataset.csv</font> from 03c: the "
+                                    "<b>163 BioASQ questions</b> judged against ground truth, the same set for "
+                                    "everyone"),
+        ("Expect the instructor’s numbers", "Your values should be close to the grey instructor values; small "
+                                            "differences in answers or judge labels shift them a little"),
         ("No benchmark?", "Set <font face='Courier'>FORCE_FALLBACK = True</font>: PubMedQA run from "
                           "MyGPT-evaluations"),
         ("Open the notebook", "<font face='Courier'>04-recalibrate-weights/04_sensitivity_analysis.ipynb</font> "
@@ -134,11 +136,11 @@ def page1():
         [[P("Weight", "head"), P("Meaning", "head"), P("Default", "head"), P("UI / API field", "head"),
           P("Your choice", "head"), P("Instructor", "head")],
          [P("<b>a, b, c</b>", "cell"), P("semantic, keyword, rerank in QRS", "cell"), P("4, −4, −1", "cell"),
-          P("Qsem_a, Qkey_b, Qrank_c", "monosm"), "", P(f"{EX}−3, 1, −5</font>", "cell")],
+          P("Qsem_a, Qkey_b, Qrank_c", "monosm"), "", P(f"{EX}4, 5, −2</font>", "cell")],
          [P("<b>x, y, z</b>", "cell"), P("semantic, keyword, rerank in ARS", "cell"), P("5, −2, 0", "cell"),
-          P("Asem_x, Akey_y, Arank_z", "monosm"), "", P(f"{EX}−1, −5, −3</font>", "cell")],
+          P("Asem_x, Akey_y, Arank_z", "monosm"), "", P(f"{EX}5, −5, 4</font>", "cell")],
          [P("<b>p, q</b>", "cell"), P("how much QRS vs ARS counts in HI", "cell"), P("1, 2", "cell"),
-          P("QRS_p, ARS_q", "monosm"), "", P(f"{EX}3, 0</font>", "cell")]],
+          P("QRS_p, ARS_q", "monosm"), "", P(f"{EX}5, 5 (= 1 : 1)</font>", "cell")]],
         [0.6 * inch, 2.0 * inch, 0.7 * inch, 1.55 * inch, 1.1 * inch, CONTENT_W - 5.95 * inch],
         header_color=ORANGE, row_h=[None, 22, 22, 22])
     story += [Spacer(1, 3), w,
@@ -155,11 +157,11 @@ def page1():
 
     load = grid(
         [[P("§1–§2 — write what you see", "head"), P("You", "head"), P("Instructor run", "head")],
-         [P("Questions / incorrect answers", "cell"), "", P(f"{EX}23 questions, 2 incorrect</font>", "cell")],
-         [P("Random baseline (share incorrect)", "cell"), "", P(f"{EX}0.087</font>", "cell")],
+         [P("Questions / incorrect answers", "cell"), "", P(f"{EX}163 questions (03c), 53 incorrect</font>", "cell")],
+         [P("Random baseline (share incorrect)", "cell"), "", P(f"{EX}0.325</font>", "cell")],
          [P("PR-AUC, default weights: QRS / ARS / HI", "cell"), "",
-          P(f"{EX}0.077 / 0.183 / 0.139</font>", "cell")],
-         [P("PR-AUC of MyGPT’s stored HI", "cell"), "", P(f"{EX}0.091 (≈ random)</font>", "cell")]],
+          P(f"{EX}0.384 / 0.553 / 0.548</font>", "cell")],
+         [P("PR-AUC of MyGPT’s stored HI", "cell"), "", P(f"{EX}0.574</font>", "cell")]],
         [2.45 * inch, 2.35 * inch, CONTENT_W - 4.8 * inch], header_color=TEAL, row_h=[None, 19, 19, 19, 19])
     story += [section("Steps 1–2 — Load the benchmark and score the defaults", TEAL, "5–7 min"), load]
     return story
@@ -180,10 +182,12 @@ def page2():
           Table([[Box(), P("broad ridge", "cell"), Box(), P("single spike", "cell"), Box(), P("flat", "cell")]],
                 colWidths=[0.17 * inch, 0.75 * inch, 0.17 * inch, 0.75 * inch, 0.17 * inch, 0.4 * inch],
                 style=[("LEFTPADDING", (0, 0), (-1, -1), 1), ("VALIGN", (0, 0), (-1, -1), "MIDDLE")])],
-         [P(f"{EX}instructor — QRS</font>", "cell"), P(f"{EX}−3, 1, −5</font>", "cell"),
-          P(f"{EX}1.000</font>", "cell"), P(f"{EX}34 combos tie at 1.0: a plateau, not a single best</font>", "cell")],
-         [P(f"{EX}instructor — ARS</font>", "cell"), P(f"{EX}−1, −5, −3</font>", "cell"),
-          P(f"{EX}0.625</font>", "cell"), P(f"{EX}z has no effect: A-rerank is 0 for every row</font>", "cell")]],
+         [P(f"{EX}instructor — QRS</font>", "cell"), P(f"{EX}4, 5, −2</font>", "cell"),
+          P(f"{EX}0.562</font>", "cell"),
+          P(f"{EX}ridge at positive b (default 0.384): keyword match helps here</font>", "cell")],
+         [P(f"{EX}instructor — ARS</font>", "cell"), P(f"{EX}5, −5, 4</font>", "cell"),
+          P(f"{EX}0.563</font>", "cell"),
+          P(f"{EX}default (0.553) already on the ridge; z has no effect</font>", "cell")]],
         [1.85 * inch, 1.05 * inch, 0.7 * inch, CONTENT_W - 3.6 * inch], header_color=ORANGE,
         row_h=[None, 19, 19, None, None])
     top.setStyle(TableStyle([("BACKGROUND", (0, 3), (-1, 4), TINT)]))
@@ -194,20 +198,20 @@ def page2():
         [[P("§4 p : q sweep", "head"), P("Best p : q", "head"), P("HI PR-AUC", "head"),
           P("What does it mean? (e.g. “HI ignores ARS”)", "head")],
          [P("<b>You</b>", "cell"), "", "", ""],
-         [P(f"{EX}instructor</font>", "cell"), P(f"{EX}3 : 0</font>", "cell"), P(f"{EX}1.000</font>", "cell"),
-          P(f"{EX}q = 0, so HI uses QRS only; 5 settings tie at 1.0</font>", "cell")]],
+         [P(f"{EX}instructor</font>", "cell"), P(f"{EX}5 : 5</font>", "cell"), P(f"{EX}0.597</font>", "cell"),
+          P(f"{EX}only the ratio matters: every p = q ties, so QRS and ARS count equally</font>", "cell")]],
         [1.3 * inch, 0.9 * inch, 0.9 * inch, CONTENT_W - 3.1 * inch], header_color=ORANGE, row_h=[None, 19, None])
     pq.setStyle(TableStyle([("BACKGROUND", (0, 2), (-1, 2), TINT)]))
     story += [section("Step 4 — Sweep p : q for HI", ORANGE, "10–12 min"), pq]
 
     # How the weights are picked: the instructor run's heat maps from 04_sensitivity_analysis_final.ipynb
     fig_h = 1.5 * inch
-    heat_qa = Image(str(ASSETS / "m4_heatmap_cell9.png"), width=fig_h * 1063 / 447, height=fig_h)
-    heat_pq = Image(str(ASSETS / "m4_heatmap_cell12.png"), width=fig_h * 447 / 381, height=fig_h)
+    heat_qa = Image(str(ASSETS / "m4_heatmap_cell9.png"), width=fig_h * 1065 / 440, height=fig_h)
+    heat_pq = Image(str(ASSETS / "m4_heatmap_cell12.png"), width=fig_h * 456 / 381, height=fig_h)
     how = [
         ("①", "Score every weight set", "each (a, b, c) on −5…5 → QRS → PR-AUC; a pixel is the best over c (or z)"),
-        ("②", "Keep the brightest", "yellow = best; the red × default sits in the dark"),
-        ("③", "Then weight HI", "try every p : q with those QRS and ARS (right)"),
+        ("②", "Keep the brightest", "yellow = best; red × = default. Here QRS gains most by making b positive"),
+        ("③", "Then weight HI", "try every p : q with those QRS and ARS; yellow diagonal = p = q"),
         ("④", "Check the shape", "a wide yellow area means many ties, so the “best” is partly luck"),
     ]
     figs_w = heat_qa.drawWidth + 0.08 * inch + heat_pq.drawWidth
@@ -231,18 +235,18 @@ def page2():
         [[P("§5 bootstrap (200 resamples)", "head"), P("HI PR-AUC default  mean [95% CI]", "head"),
           P("HI PR-AUC recalibrated  mean [95% CI]", "head"), P("Win rate", "head")],
          [P("<b>You</b>", "cell"), "", "", ""],
-         [P(f"{EX}instructor</font>", "cell"), P(f"{EX}0.189 [0.083, 0.379]</font>", "cell"),
-          P(f"{EX}1.000 [1.000, 1.000]</font>", "cell"), P(f"{EX}100 %</font>", "cell")]],
+         [P(f"{EX}instructor</font>", "cell"), P(f"{EX}0.547 [0.407, 0.667]</font>", "cell"),
+          P(f"{EX}0.600 [0.478, 0.709]</font>", "cell"), P(f"{EX}91 %</font>", "cell")]],
         [1.6 * inch, 2.15 * inch, 2.35 * inch, CONTENT_W - 6.1 * inch], header_color=TEAL, row_h=[None, 19, None])
     boot.setStyle(TableStyle([("BACKGROUND", (0, 2), (-1, 2), TINT)]))
-    reality = Table([[P("<b>Reality check on the instructor run.</b> With only <b>2 incorrect answers</b>, it is easy "
-                        "to find weights that put both at the top: PR-AUC 1.0, a 100 % bootstrap win, and odd "
-                        "weights (negative semantic weight, ARS switched off). The weights were chosen on the same "
-                        "23 questions they are tested on, so this is <b>overfitting</b>, not a better HI. Before "
-                        "using weights for real, add incorrect examples and report PR-AUC on a held-out split.",
-                        "cell")]], colWidths=[CONTENT_W])
-    reality.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#FBEDEE")),
-                                 ("LINEBEFORE", (0, 0), (0, 0), 3, RED),
+    reality = Table([[P("<b>What the instructor run shows.</b> HI PR-AUC rises from 0.547 to 0.600 and the new weights "
+                        "win 91 % of resamples, past the 90 % bar, so the notebook recommends them. The main change is "
+                        "a <b>positive keyword weight b</b> in QRS: BioASQ questions name genes and drugs, so keyword "
+                        "overlap helps. If your best weights differ slightly, compare where the bright ridge lies, not "
+                        "the exact cell.", "cell")]],
+                    colWidths=[CONTENT_W])
+    reality.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#E3F2EF")),
+                                 ("LINEBEFORE", (0, 0), (0, 0), 3, TEAL),
                                  ("LEFTPADDING", (0, 0), (-1, -1), 8),
                                  ("TOPPADDING", (0, 0), (-1, -1), 5),
                                  ("BOTTOMPADDING", (0, 0), (-1, -1), 5)]))
@@ -276,8 +280,8 @@ def page2():
         ("All PR-AUCs ≈ baseline", "Too few incorrect labels, or components all NaN: check "
                                    "df[COMP].describe()"),
         ("Heat map is flat", "QRS isn’t informative for your set; ARS / HI may matter more. A real finding"),
-        ("Best weights change every run", "Benchmark too small: keep the default weights"),
-        ("PR-AUC is nan", "No incorrect answers in the data: label more, add unanswerable questions"),
+        ("Weights differ from instructor", "Small answer or label differences: compare the ridge, not the cell"),
+        ("“calibration dataset not found”", "Run 03c first; the pilot fallback is too small to trust"),
     ])
     story += [Spacer(1, 6), side_by_side(cp, tr, section("Checkpoint", INK), section("Stuck?", ORANGE))]
     return story

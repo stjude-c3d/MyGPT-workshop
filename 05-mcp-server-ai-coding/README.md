@@ -36,14 +36,19 @@ corpus is CC-BY-4.0, pinned to one commit).
 
 ## Concepts
 
-```
- GitHub Copilot (Agent mode)
-   │  reads SKILL.md  ──►  "how to do the task" (workflow, rules, failure behaviour)
-   │  calls MCP tools ──►  turing-way MCP server ──► Turing Way corpus (pinned, cited)
-   │                                       └─────► MyGPT library API (RAG over the corpus)
-   ▼
- Answer with citations, or "I can't answer from the approved sources"
-```
+![Workflow: the harness (chat interface, LLMs and a plan–code–debug sandbox) reaches your source code, the MCP server with tools, and skills. The MCP server queries MyGPT, which retrieves from the Turing Way handbook; the skills are designed from Turing Way best practices and protocols.](images/turing_way_mcp_workflow.png)
+
+*Workflow figure from Team 20's St. Jude BioHackathon 2026 presentation.*
+
+1. **Harness:** GitHub Copilot in VS Code. You chat, and the LLM plans, writes code,
+   then debugs and verifies in a sandbox.
+2. The LLM can reach three things: **your source code**, the **MCP server** and its
+   tools, and the **skills**.
+3. **MCP server → MyGPT:** the tools query MyGPT, which holds the Turing Way handbook,
+   so answers come from retrieved, cited passages (RAG).
+4. **Skills** are playbooks written from Turing Way best practices and protocols.
+5. **Result:** an answer that cites the Turing Way page it came from, or "I can't
+   answer from the approved sources".
 
 | Piece | What it is | In Team 20's repo |
 |---|---|---|
@@ -61,8 +66,28 @@ corpus is CC-BY-4.0, pinned to one commit).
 | `get_rag_status` | Check that MyGPT can retrieve Turing Way evidence |
 | `get_turing_way_review_evidence`, `get_turing_way_evidence_packets`, `validate_turing_way_review`, `render_validated_turing_way_review` | Evidence gathering and validation used by the review skills |
 
-**Skills** you will use: `turing-way-pathfinder`, `turing-way-guidance`,
-`turing-way-review`, `mygpt-library`, and `skill-template` (for writing your own).
+**Skills** you will use:
+
+| Skill | What it does |
+|---|---|
+| `turing-way-pathfinder` | Picks a Turing Way pathway and a short, cited checklist for your research goal |
+| `turing-way-guidance` | Gives a cited learning path for reproducible research, data science or AI practice |
+| `turing-way-review` | Rates a repository's maturity in three areas (0–2 each, out of 6) with prioritised fixes |
+| `turing-way-certified` | Scores a repository on ten criteria (0–10 each, **out of 100**) and writes a Markdown + PDF report |
+| `turing-healthcheck` | Scored healthcheck of a repository's code-development practices, saved as `TURING_HEALTHCHECK.md` |
+| `mygpt-library` | Finds your MyGPT datasets and document titles through the MyGPT API |
+| `skill-template` | Starting point for writing your own skill |
+
+### Why Team 20 built this
+
+The Turing Way is an open handbook for reproducible, ethical and collaborative data
+science. As a PDF it runs to about 1,000 pages, too long to consult while you code. At
+the St. Jude BioHackathon 2026, Team 20 asked how to apply its principles *while
+coding*. Their answer connects an AI coding agent, through an MCP server, to MyGPT
+preloaded with the handbook, so the agent can check the handbook and recommend cited
+best practices. Their `turing-way-certified` skill scores a repository against ten Turing
+Way criteria: in their demo, The Turing Way's own repository scored **93/100** and the
+MyGPT source code **80/100**.
 
 ### Turing Way concepts this setup demonstrates
 
@@ -138,7 +163,23 @@ The canonical skills live in `.agents/skills/`. Each `SKILL.md` declares
 3. **Review a repository:** open the `MyGPT-workshop` folder (add it to the workspace)
    and ask *"Use the turing-way-review skill to review this repository."* You get a
    rating out of six with prioritised fixes.
-4. **Stretch — write a skill:** copy `.agents/skills/skill-template` to
+4. **Stretch — readiness score out of 100:** with `MyGPT-workshop` still in the
+   workspace, ask *"Is this repository Turing Way certified, and what does it still
+   need?"* The `turing-way-certified` skill scores ten criteria from 0 to 10:
+
+   | # | Criterion | # | Criterion |
+   |---|---|---|---|
+   | 1 | Project purpose and scope | 6 | Testing and validation |
+   | 2 | Version control and provenance | 7 | Automation and continuous integration |
+   | 3 | Open collaboration | 8 | Documentation and usability |
+   | 4 | Reproducible environments | 9 | Licensing, attribution and responsible reuse |
+   | 5 | Data and workflow provenance | 10 | Ethics, accessibility and sustainability |
+
+   It writes `TURING_WAY_CERTIFICATION.md` and `TURING_WAY_CERTIFICATION.pdf` at the
+   reviewed repository's root. Don't commit them. Compare your total with Team 20's
+   demo results: The Turing Way 93/100, MyGPT 80/100. The score is a readiness
+   snapshot, **not** an official Turing Way certification.
+5. **Stretch — write a skill:** copy `.agents/skills/skill-template` to
    `.agents/skills/mygpt-eval-helper`, describe a workflow from module 3, and validate it:
 
    ```bash
@@ -160,6 +201,7 @@ The canonical skills live in `.agents/skills/`. Each `SKILL.md` declares
 | Server starts but lists no resources | GitHub rate limit or no network. Set `LEARNING_ASSISTANT_OFFLINE=true` to use the bundled snapshot, or set `GITHUB_TOKEN` in your shell |
 | Port 8000 already in use (Path B) | Use the `LEARNING_ASSISTANT_HOST_PORT`/`MYGPT_BACKEND_HOST_PORT` overrides shown above |
 | Skills not offered | Check `chat.useAgentSkills` and the skills location setting; reload the window |
+| `turing-way-certified` gives no PDF | It needs a local PDF renderer (Pandoc, LibreOffice or a Python PDF library). The Markdown report and score are still valid |
 | `get_rag_status` fails | MyGPT isn't reachable or has no Turing Way dataset. Use Path B, or skip the RAG tools |
 | Something else | `uv run python scripts/project.py doctor`, and Team 20's `docs/troubleshooting.md` |
 

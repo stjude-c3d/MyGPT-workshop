@@ -3,5 +3,11 @@
 __pycache__/
 .ipynb_checkpoints/
 .DS_Store
-workshop_outputs/
+workshop_outputs/*
+!workshop_outputs/03_calibration_eval_dataset.csv
 data/fallback/
+
+# Reports written by Team 20 skills in module 5
+TURING_WAY_CERTIFICATION.md
+TURING_WAY_CERTIFICATION.pdf
+TURING_HEALTHCHECK.md

@@ -35,7 +35,7 @@ module reads them:
 ```
 Module 1 ──► library name (in .env)
 Module 2 ──► workshop_outputs/02_query_results.csv
-Module 3 ──► workshop_outputs/03_questions.csv ──► workshop_outputs/03_eval_dataset.csv
+Module 3 ──► pilot + Cohen's κ ──► (optional) 03c BioASQ run + judge ──► 03_calibration_eval_dataset.csv
 Module 4 ──► workshop_outputs/04_recalibrated_weights.json ──► MyGPT chat settings
 Module 5 ──► Turing Way MCP server + skills in GitHub Copilot
 ```

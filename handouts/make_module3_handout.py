@@ -297,18 +297,18 @@ def page2():
                 "judge labels used: True.</font>", "small")]
 
     cp = checklist([
-        "At least <b>20 reviewed questions</b>, including some unanswerable ones",
+        "At least <b>20 reviewed pilot questions</b>, including some unanswerable ones",
         "At least <b>20 rows hand-labelled</b>",
         "Accuracy and κ printed, and you can say whether the judge is good enough",
-        "<font face='Courier'>workshop_outputs/03_eval_dataset.csv</font> saved with a "
-        "<font face='Courier'>label</font> column (module 4 reads it)",
+        "Optional for module 4: 03c runs original BioASQ questions and judges against ground truth",
+        "No additional manual labels or second κ check in optional 03c",
     ])
     tr = trouble_table([
         ("Vague questions", "“What does the document say?” — lower temperature, bigger LLM, or tighten the "
                             "prompt in 03a"),
         ("Judge says all correct", "Typical of small models: stronger JUDGE_LLM or more few-shot examples"),
         ("Judge replies don’t parse", "Model ignores JSON mode; the regex fallback runs — check judge_raw"),
-        ("Generation too slow", "Set N_CHUNKS to 10–15 in 03a"),
+        ("Calibration takes a while", "Optional 03c queries all BioASQ questions; checkpoints progress"),
         ("κ is nan", "All labels are the same class: label more rows, include unanswerable ones"),
     ])
     story += [Spacer(1, 6), side_by_side(cp, tr, section("Checkpoint", INK), section("Stuck?", ORANGE))]

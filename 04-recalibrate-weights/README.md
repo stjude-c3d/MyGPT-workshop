@@ -11,10 +11,13 @@
 
 ## Before you start
 
-- `workshop_outputs/03_eval_dataset.csv` from module 3. Otherwise the notebook uses the
-  PubMedQA fallback.
-- About 20-25 labelled rows, with at least 3-5 incorrect, gives a usable signal. With fewer,
-  treat the results as illustrative.
+- `workshop_outputs/03_calibration_eval_dataset.csv` from module 3 (03c): the 163
+  original BioASQ questions, judged against their ground truths. Every attendee uses
+  this same set, so your numbers should be close to the instructor reference run below.
+  Small differences in MyGPT answers or judge labels can shift them a little.
+- If the file is missing, the notebook warns and uses the pilot `03_eval_dataset.csv`,
+  or the PubMedQA fallback if there is no pilot either. Those sets are much smaller, so
+  treat their weights as illustrative.
 
 | Time | Activity |
 |---|---|
@@ -31,7 +34,12 @@ $$ARS = x\,\overline{A_{sem}} + y\,\overline{A_{key}} + z\,\overline{A_{rerank}}
 $$HI = 1 - \frac{p\,QRS}{p+q} - \frac{q\,ARS}{p+q}$$
 
 Each bar is a mean over the top-k retrieved chunks. MyGPT then rescales the raw weighted
-sum to 0–100.
+sum to 0–100. Only the ratios between weights matter: multiplying a set by the same
+positive number gives the same ranking, so p:q = 5:5 is the same as 1:1.
+
+On your own benchmark, MyGPT returns the aggregate QRS and ARS components but no ARS
+rerank component, so the notebook sets A<sub>rerank</sub> to 0 and **z has no effect**.
+The PubMedQA fallback rebuilds it from per-chunk data.
 
 | Weight | Meaning | Default (backend `models.py`) | UI / API field |
 |---|---|---|---|
@@ -48,17 +56,20 @@ the positive class and measure **PR-AUC** (average precision) of each score. PR-
 suits this because incorrect answers are usually the minority. The baseline (a random
 score) equals the share of incorrect answers.
 
-**Overfitting guard:** with small benchmarks, many weight combinations look equally
-good. The notebook bootstraps the data and only recommends weights that stay in the top
-10 % across resamples.
+**Stability check:** the notebook resamples the 163 questions 200 times and recommends
+the new weights only if their HI PR-AUC beats the defaults in at least 90 % of
+resamples. Otherwise it keeps the defaults.
 
 ## Hands-on
 
-Open [`04_sensitivity_analysis.ipynb`](04_sensitivity_analysis.ipynb) and run it from top
-to bottom:
+After the module 3b κ check, run 03c to query the original BioASQ questions and apply
+the validated LLM judge to their ground truths. Then open
+[`04_sensitivity_analysis.ipynb`](04_sensitivity_analysis.ipynb) and run it from top to
+bottom:
 
-1. Load your benchmark (or the fallback) and rebuild the per-question components.
-2. Score the **default** weights: PR-AUC of QRS, ARS and HI.
+1. Load `03_calibration_eval_dataset.csv` (or the pilot `03_eval_dataset.csv`, or the
+   PubMedQA fallback) and rebuild the per-question components.
+2. Score the **default** weights: PR-AUC of QRS, ARS and HI, plus MyGPT's stored HI.
 3. Grid search (a, b, c) and (x, y, z), shown as heat maps.
 4. Sweep p:q for HI.
 5. Bootstrap the stability check and save
@@ -67,9 +78,23 @@ to bottom:
    prefer the API, the last cell runs `client.update_dataset(...)`; it's commented out
    so you choose when to change your library.
 
+**Instructor reference run** (03c calibration set: 163 BioASQ questions, 53 incorrect,
+random baseline 0.325):
+
+| | Default weights | Recalibrated |
+|---|---|---|
+| QRS (a, b, c) | 4, −4, −1 → PR-AUC 0.384 | 4, 5, −2 → 0.562 |
+| ARS (x, y, z) | 5, −2, 0 → 0.553 | 5, −5, 4 → 0.563 |
+| HI (p, q), bootstrap mean [95% CI] | 1, 2 → 0.547 [0.407, 0.667] | 5, 5 → 0.600 [0.478, 0.709] |
+
+The recalibrated weights won 91 % of resamples, so the notebook recommends them. The main
+change is a positive keyword weight in QRS: BioASQ questions name genes and drugs, so
+keyword overlap helps.
+
 ## Checkpoint
 
-- [ ] Default vs. recalibrated PR-AUC printed for QRS, ARS and HI.
+- [ ] Default PR-AUC printed for QRS, ARS and HI, and default vs. recalibrated HI PR-AUC
+      from the bootstrap.
 - [ ] Heat map shows where good weights lie (a broad ridge, or a single spike?).
 - [ ] `04_recalibrated_weights.json` saved, with the bootstrap stability shown.
 - [ ] You can explain in one sentence why your field prefers these weights.
@@ -78,9 +103,12 @@ to bottom:
 
 | Symptom | Fix |
 |---|---|
-| All PR-AUCs ≈ baseline | Too few incorrect labels, or the components are missing (all NaN). Check `df[components].describe()` |
+| "calibration dataset not found" warning | Run 03c first. Without it, the notebook uses the much smaller pilot set; treat those weights as illustrative |
+| All PR-AUCs ≈ baseline | Too few incorrect labels, or the components are missing (all NaN). Check `df[COMP].describe()` |
+| Changing z does nothing | Expected on your own benchmark: A<sub>rerank</sub> is 0 (see Concepts) |
+| Several p:q settings tie | Only the ratio matters; any p = q gives the same HI |
 | Heat map is flat | QRS isn't informative for your set; ARS/HI may matter more. That is a real finding |
-| Best weights change on every run | The benchmark is too small. Report the default weights, not the "best" ones |
+| Your best weights differ from the instructor's | Small differences in MyGPT answers or judge labels can change the single best cell. Compare where the bright ridge lies, not the exact weights |
 
 ## Going further
 

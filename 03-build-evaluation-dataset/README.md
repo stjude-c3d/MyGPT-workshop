@@ -55,27 +55,39 @@ in [MyGPT-evaluations](https://github.com/stjude/MyGPT-evaluations), at workshop
 1. **[03a_generate_questions.ipynb](03a_generate_questions.ipynb)**
    - Chunk your documents and ask the LLM to write a question and reference answer for
      each sampled chunk.
-   - Add your own unanswerable questions.
-   - Review the questions in `workshop_outputs/03_questions.csv`: delete bad rows, edit
-     unclear ones.
-   - Run each question through MyGPT and save `workshop_outputs/03_answers.csv`.
+   - Review `workshop_outputs/03_questions.csv`, then run each question through MyGPT.
 2. **[03b_label_and_judge.ipynb](03b_label_and_judge.ipynb)**
    - Hand-label at least 20 answers in the notebook, or fill in the `human_label`
      column of `workshop_outputs/03_to_label.csv` in a spreadsheet.
    - Run the LLM judge on every row.
-   - Compare judge and human labels, then save `workshop_outputs/03_eval_dataset.csv`
-     for module 4.
+   - Compare judge and human labels. Continue with the optional calibration workflow only
+     after you are satisfied with the judge agreement.
+
+### Optional: calibrate weights with the BioASQ questions
+
+This optional step is not part of the 30-minute core exercise. It reuses the LLM judge
+validated in 03b and does not ask for more manual labels or another Cohen's κ check.
+
+3. **[03c_create_calibration_dataset.ipynb](03c_create_calibration_dataset.ipynb)**
+   - Load the original BioASQ questions and ground truths from
+     `data/BioASQ/questions_all_164.csv` (the current file contains 163 complete rows).
+   - Run every question through MyGPT, then apply the validated LLM judge against its
+     yes/no or factoid ground truth. The combined notebook checkpoints API answers and
+     judge progress so interrupted runs can resume.
+   - The output `workshop_outputs/03_calibration_eval_dataset.csv` is the input for
+     module 4. No generated questions or added irrelevant controls are used.
 
 [`templates/labels_template.csv`](templates/labels_template.csv) shows the expected
 columns if you'd rather label in Excel or Google Sheets.
 
 ## Checkpoint
 
-- [ ] At least 20 reviewed questions, including some unanswerable ones.
+- [ ] At least 20 reviewed pilot questions, including some unanswerable ones.
 - [ ] At least 20 rows hand-labelled.
 - [ ] Judge-vs-human agreement and κ printed; you can say whether the judge is good
       enough.
-- [ ] `workshop_outputs/03_eval_dataset.csv` saved with a `label` column.
+- [ ] (Optional, for module 4) The BioASQ questions have been run and judge-labeled in
+      03c; `workshop_outputs/03_calibration_eval_dataset.csv` is saved.
 
 ## Troubleshooting
 
@@ -84,7 +96,7 @@ columns if you'd rather label in Excel or Google Sheets.
 | Generated questions are vague ("What does the document say?") | Lower the temperature, use a bigger LLM, or tighten the prompt in 03a |
 | Judge marks almost everything correct | Typical for small models. Use a stronger `JUDGE_LLM`, or add few-shot examples to the judge prompt |
 | Every judge reply fails to parse | The model ignores JSON mode. The notebook falls back to a regex; check the `judge_raw` column |
-| Generation takes too long | Reduce `N_CHUNKS` in 03a to 10–15 |
+| Generation takes too long | Reduce `N_CHUNKS` in 03a; 03c is optional and takes longer |
 
 ## Going further
 
