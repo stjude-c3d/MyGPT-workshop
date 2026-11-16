@@ -96,7 +96,7 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
          --out workshop_outputs/02_query_results.csv
    ```
 
-      This runs the 163 BioASQ test questions and may take a while. You can also open a
+      This runs the 25 BioASQ test questions and may take a while. You can also open a
       **Terminal** in JupyterLab and run `python 02-query-via-api/...` directly.
 
 3. **Optional:** use `--dataset workshop-library-B` to rerun the batch on your module 1

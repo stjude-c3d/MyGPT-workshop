@@ -9,7 +9,7 @@ Usage
     from common.mygpt_client import MyGPTClient
     client = MyGPTClient.from_env()          # reads .env at the repo root
     client.list_datasets()
-    result = client.ask("What is version control?")
+    result = client.ask("Do glioblastoma tumors have a high degree of lymphocyte infiltration?")
     result["answer"], result["QRS"], result["ARS"], result["HI"]
 """
 

@@ -231,10 +231,10 @@ def page2():
     story += [section("Step 4 — Batch: first 5 BioASQ questions", TEAL, "5 min"),
               batch,
               P(f"{EX}Instructor run: QRS 49–90, ARS 93–100, HI 24–38. Saved to "
-                "workshop_outputs/02_query_results.csv — remove .head(5) to run all 163.</font>", "small")]
+                "workshop_outputs/02_query_results.csv — remove .head(5) to run all 25.</font>", "small")]
 
     cli = Table([[P("docker compose exec workshop python 02-query-via-api/scripts/query_library.py "
-                    "--question \"What is version control?\"", "monosm")],
+                    "--question \"Do glioblastoma tumors have a high degree of lymphocyte infiltration?\"", "monosm")],
                  [P("docker compose exec workshop python 02-query-via-api/scripts/query_library.py "
                     "--questions data/BioASQ/questions_25.csv --out workshop_outputs/02_query_results.csv",
                     "monosm")],
@@ -245,8 +245,8 @@ def page2():
     cli.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 1), TINT),
                              ("LINEBELOW", (0, 0), (-1, 0), 0.5, colors.white),
                              ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                             ("TOPPADDING", (0, 0), (-1, -1), 2.5),
-                             ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5)]))
+                             ("TOPPADDING", (0, 0), (-1, -1), 2),
+                             ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
     story += [KeepTogether([section("Step 5 — Same thing from the command line", TEAL, "15–20 min"), cli])]
 
     story += [section("Exercises", TEAL),
