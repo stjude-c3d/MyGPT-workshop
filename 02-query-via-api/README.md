@@ -87,12 +87,12 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
 2. Try the command-line version, run inside the container from your laptop's terminal:
 
    ```bash
-   docker compose exec workshop python 02-query-via-api/scripts/query_library.py --question "What is version control?"
+   docker compose exec workshop python 02-query-via-api/scripts/query_library.py --question "Do glioblastoma tumors have a high degree of lymphocyte infiltration?"
    ```
 
    ```bash
    docker compose exec workshop python 02-query-via-api/scripts/query_library.py \
-         --questions data/BioASQ/questions_final_less.csv \
+         --questions data/BioASQ/questions_25.csv \
          --out workshop_outputs/02_query_results.csv
    ```
 

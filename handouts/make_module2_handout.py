@@ -236,7 +236,7 @@ def page2():
     cli = Table([[P("docker compose exec workshop python 02-query-via-api/scripts/query_library.py "
                     "--question \"What is version control?\"", "monosm")],
                  [P("docker compose exec workshop python 02-query-via-api/scripts/query_library.py "
-                    "--questions data/BioASQ/questions_final.csv --out workshop_outputs/02_query_results.csv",
+                    "--questions data/BioASQ/questions_25.csv --out workshop_outputs/02_query_results.csv",
                     "monosm")],
                  [P("Add <font face='Courier'>--list</font> to list libraries, "
                     "<font face='Courier'>--dataset workshop-library-B</font> to query your comparison library.",

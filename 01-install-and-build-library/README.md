@@ -41,7 +41,7 @@ cd MyGPT-workshop
 
 The BioASQ PDFs and test questions are included in `data/BioASQ/`. Upload the PDFs in
 `data/BioASQ/pdfs/` when creating your library. The test questions are in
-`data/BioASQ/questions_final.csv`.
+`data/BioASQ/questions_all_164.csv`.
 
 Choose an embedding model you pulled in [SETUP.md](../SETUP.md) under **Upload →
 Advanced** when creating the library. It can't be changed after the library is built.
@@ -104,7 +104,7 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
    - Embedding model: **nomic-embed-text**
    - BM25: **on**, reranker: **qnli-electra-base (default)**
 4. Upload your documents and wait until indexing finishes.
-5. Ask 3 questions from `data/BioASQ/questions_final.csv`, or
+5. Ask 3 questions from `data/BioASQ/questions_all_164.csv`, or
   your own. Note the QRS, ARS and HI for each.
 
 ### Step 3 — Settings experiment (13 min)

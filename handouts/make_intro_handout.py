@@ -172,8 +172,6 @@ def story():
         "<b>Docker Desktop</b>, <b>Ollama</b>, Git, VS Code + GitHub Copilot, uv",
         "Models pulled: <font face='Courier'>ollama pull nomic-embed-text</font> and "
         "<font face='Courier'>ollama pull llama3</font>",
-        "MyGPT installed (pre-built images) and a superuser created",
-        "Workshop repo cloned and <font face='Courier'>docker compose pull</font> done",
     ], width=3.2 * inch)
     links = Table([[P(f"<b>{a}</b><br/><font face='Courier' size='7.2'>{b}</font>", "cell")] for a, b in [
         ("Workshop", "github.com/stjude-c3d/MyGPT-workshop"),
@@ -186,19 +184,27 @@ def story():
                                ("TOPPADDING", (0, 0), (-1, -1), 1.5),
                                ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5),
                                ("LINEBELOW", (0, 0), (-1, -2), 0.4, RULE)]))
-    st = 0.9 * inch
-    stickers = Table([[Image(str(ASSETS / "sticker_privacy_first.png"), width=st * 877 / 859, height=st),
-                       Image(str(ASSETS / "sticker_in_control.png"), width=st * 945 / 538, height=st),
-                       Image(str(ASSETS / "sticker_your_data.png"), width=st * 830 / 897, height=st)]],
-                     colWidths=[1.4 * inch, 2.1 * inch, 1.4 * inch])
-    stickers.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                                  ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
-    bottom = Table([[[section("Before you arrive", RED), before],
-                     [section("Resources", BLUE), links,
-                      Spacer(1, 6),
-                      P("Full setup steps are in SETUP.md. Pull the models and the Docker image "
-                        "<b>before</b> the day: conference Wi-Fi is too slow for multi-GB downloads.",
-                        "small")]]],
+    # sticker + QR code for the paper
+    st = 1.1 * inch
+    qr = 1.05 * inch
+    paper = [P('<font size="10.5" color="#2C4659"><b>Read the MyGPT paper</b></font>'),
+             Spacer(1, 3),
+             P("Patel J, <i>et al.</i> Democratizing reliable knowledge-seeking with MyGPT: a privacy-first, "
+               "open-source retrieval-augmented generation platform. <i>Nature Communications</i> (2026).",
+               "cell"),
+             Spacer(1, 3),
+             P("<font face='Courier' size='7.4'>doi.org/10.1038/s41467-026-78509-6</font>", "cell")]
+    stickers = Table([[Image(str(ASSETS / "sticker_in_control.png"), width=st * 945 / 538, height=st),
+                       Image(str(ASSETS / "qr_mygpt_paper.png"), width=qr, height=qr * 500 / 502),
+                       paper]],
+                     colWidths=[2.35 * inch, 1.25 * inch, 2.75 * inch])
+    stickers.setStyle(TableStyle([("ALIGN", (0, 0), (1, 0), "CENTER"),
+                                  ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                                  ("LINEBEFORE", (1, 0), (1, 0), 0.5, RULE)]))
+    bottom = Table([[[section("Before you arrive", RED), before, Spacer(1, 6),
+                      P("Full setup steps are in SETUP.md. Pull the models <b>before</b> the day: "
+                        "conference Wi-Fi is too slow for multi-GB downloads.", "small")],
+                     [section("Resources", BLUE), links]]],
                    colWidths=[CONTENT_W / 2, CONTENT_W / 2])
     bottom.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
                                 ("BACKGROUND", (0, 0), (0, 0), TINT),

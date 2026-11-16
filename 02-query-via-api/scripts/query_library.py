@@ -4,7 +4,7 @@
 Examples (run from the repo root):
     python 02-query-via-api/scripts/query_library.py --list
     python 02-query-via-api/scripts/query_library.py --question "Do glioblastoma tumors have a high degree of lymphocyte infiltration?"
-    python 02-query-via-api/scripts/query_library.py --questions data/BioASQ/questions_final.csv \
+    python 02-query-via-api/scripts/query_library.py --questions data/BioASQ/questions_25.csv \
         --out workshop_outputs/02_query_results.csv
 
 Connection settings come from .env (see .env.example); flags override them.
