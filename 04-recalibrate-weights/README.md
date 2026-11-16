@@ -13,7 +13,7 @@
 
 - `workshop_outputs/03_eval_dataset.csv` from module 3. Otherwise the notebook uses the
   PubMedQA fallback.
-- About 50 labelled rows, with at least 10 incorrect, gives a usable signal. With fewer,
+- About 20-25 labelled rows, with at least 3-5 incorrect, gives a usable signal. With fewer,
   treat the results as illustrative.
 
 | Time | Activity |
