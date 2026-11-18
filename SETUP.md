@@ -34,7 +34,9 @@ MyGPT paper used this model.
 
 ## 3. Check local inference speed (optional)
 
-With Ollama running and `llama3` downloaded, time a representative generation request:
+With Ollama running and `llama3` downloaded, time a representative generation request.
+
+On Mac, run this in the Terminal:
 
 ```bash
 curl -sS -o /dev/null -w 'Total: %{time_total}s\n' \
@@ -45,6 +47,14 @@ curl -sS -o /dev/null -w 'Total: %{time_total}s\n' \
     "prompt": "Despite the diversity among GPCRs, are there similarities in their activation pathways?",
     "system": "Use only this information and answer in fewer than 200 words: Class A GPCRs have diverse ligands and activation pathways, but structural rearrangements converge near the G-protein coupling region. Common changes include contraction of the ligand-binding site and opening of the cytosolic side through TM6 movement. The detailed ligand-driven mechanism can still differ by receptor."
   }'
+```
+
+On Windows, run this PowerShell version instead:
+
+```powershell
+$body = '{"model":"llama3","stream":false,"prompt":"Despite the diversity among GPCRs, are there similarities in their activation pathways?","system":"Use only this information and answer in fewer than 200 words: Class A GPCR activation pathways are diverse but converge near the G-protein coupling region. Common changes include contraction of the ligand-binding site and opening of the cytosolic side through TM6 movement."}'
+$seconds = (Measure-Command { Invoke-RestMethod -Uri "http://localhost:11434/api/generate" -Method Post -ContentType "application/json" -Body $body | Out-Null }).TotalSeconds
+"Total: {0:F6}s" -f $seconds
 ```
 
 This prints the total time it might take to run typical MyGPT queries. Run the same
