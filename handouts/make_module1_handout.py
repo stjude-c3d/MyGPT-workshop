@@ -102,7 +102,7 @@ def page1():
     # Step 2
     baseline = [
         ("Library name", "<b>workshop-library-A</b>  (module 2 uses this name in .env)"),
-        ("Documents", "data/BioASQ/pdfs/  (or your own files)"),
+        ("Documents", "data/BioASQ/pdfs_70/  (70 PDFs; or your own files)"),
         ("Chunking", "Fixed-size, <b>1000</b> characters, overlap <b>Yes</b>"),
         ("Embedding model", "<b>nomic-embed-text</b> (option C: <b>text-embedding-3-small</b>) — cannot be "
                              "changed after building"),
@@ -111,7 +111,7 @@ def page1():
     settings = grid([["", P("Upload → Advanced settings", "head"), P("Baseline value", "head")]]
                     + [[Box(), P(k, "cellb"), P(v, "cell")] for k, v in baseline],
                     [0.25 * inch, 1.65 * inch, CONTENT_W - 1.9 * inch], header_color=ORANGE)
-    record = grid([[P("#", "head"), P("Question you asked (on-topic, plus one off-topic)", "head"),
+    record = grid([[P("#", "head"), P("Question from data/BioASQ/questions_25.csv (or off-topic)", "head"),
                     P("QRS", "head"), P("ARS", "head"), P("HI", "head"), P("Sources cited?", "head")]]
                   + [[P(str(i), "cellb"), "", "", "", "", ""] for i in (1, 2, 3)],
                   [0.25 * inch, 4.2 * inch, 0.55 * inch, 0.55 * inch, 0.55 * inch, CONTENT_W - 6.1 * inch],
