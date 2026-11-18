@@ -15,6 +15,11 @@
   original BioASQ questions, judged against their ground truths. Every attendee uses
   this same set, so your numbers should be close to the instructor reference run below.
   Small differences in MyGPT answers or judge labels can shift them a little.
+- The instructor run used Ollama (`llama3`, `nomic-embed-text`), so options A and B in
+  [SETUP.md](../SETUP.md#choose-where-the-models-run) should match it closely. With
+  option C (OpenAI), your library uses a different embedding model and LLM, so your
+  scores, labels and best weights will differ. That is expected: compare the shape of
+  your heat maps with the instructor's, not the exact numbers.
 - If the file is missing, the notebook warns and uses the pilot `03_eval_dataset.csv`,
   or the PubMedQA fallback if there is no pilot either. Those sets are much smaller, so
   treat their weights as illustrative.
@@ -79,7 +84,7 @@ bottom:
    so you choose when to change your library.
 
 **Instructor reference run** (03c calibration set: 163 BioASQ questions, 53 incorrect,
-random baseline 0.325):
+random baseline 0.325; `llama3` with `nomic-embed-text`):
 
 | | Default weights | Recalibrated |
 |---|---|---|
@@ -108,7 +113,7 @@ keyword overlap helps.
 | Changing z does nothing | Expected on your own benchmark: A<sub>rerank</sub> is 0 (see Concepts) |
 | Several p:q settings tie | Only the ratio matters; any p = q gives the same HI |
 | Heat map is flat | QRS isn't informative for your set; ARS/HI may matter more. That is a real finding |
-| Your best weights differ from the instructor's | Small differences in MyGPT answers or judge labels can change the single best cell. Compare where the bright ridge lies, not the exact weights |
+| Your best weights differ from the instructor's | Small differences in MyGPT answers or judge labels can change the single best cell. Compare where the bright ridge lies, not the exact weights. With option C (OpenAI) larger differences are expected, because the embedding model differs |
 
 ## Going further
 

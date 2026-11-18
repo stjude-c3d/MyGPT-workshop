@@ -159,8 +159,8 @@ def page1():
         ("JupyterLab running", "<font face='Courier'>http://localhost:8888/lab?token=mygpt-workshop</font>"),
         ("Documents readable", "PDFs in <font face='Courier'>data/BioASQ/pdfs_70/</font> "
                                "(notebook 03a sets this as <font face='Courier'>DOCS_DIR</font>)"),
-        ("Judge model pulled", "<font face='Courier'>JUDGE_LLM</font> in .env (default llama3); a bigger model "
-                               "judges better"),
+        ("Judge model set", "<font face='Courier'>JUDGE_LLM</font> in .env: llama3 (options A, B) or "
+                            "gpt-6-luna (option C, sent through MyGPT and billed to your key)"),
         ("Behind or MyGPT down?", "In 03b set <font face='Courier'>USE_FALLBACK = True</font>: PubMedQA run from "
                                   "MyGPT-evaluations, 294 questions with human labels"),
     ]

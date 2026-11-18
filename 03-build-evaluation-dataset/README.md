@@ -15,6 +15,11 @@
   397 PDFs in `data/BioASQ/pdfs/` that you uploaded in module 1, so every generated
   question is answerable from the library. To use other documents, change
   `DOCS_DIR` in 03a.
+- Question generation (03a) and the LLM judge (03b, 03c) use `MYGPT_LLM` and
+  `JUDGE_LLM` from `.env`. Ollama models (options A and B in [SETUP.md](../SETUP.md#choose-where-the-models-run))
+  are called at `OLLAMA_URL`. OpenAI models (option C, `gpt-6-luna`) are sent through
+  your MyGPT backend, which holds the API key; every call is billed to that key. 03a
+  prints which route it uses.
 - **Behind or MyGPT not working?** Set `USE_FALLBACK = True` in notebook 3b. It uses the
   scored PubMedQA run from MyGPT-evaluations (294 questions with human correctness labels).
 
@@ -97,6 +102,9 @@ columns if you'd rather label in Excel or Google Sheets.
 | Judge marks almost everything correct | Typical for small models. Use a stronger `JUDGE_LLM`, or add few-shot examples to the judge prompt |
 | Every judge reply fails to parse | The model ignores JSON mode. The notebook falls back to a regex; check the `judge_raw` column |
 | Generation takes too long | Reduce `N_CHUNKS` in 03a; 03c is optional and takes longer |
+| `connection refused` on port 11434 with option C | `MYGPT_LLM` or `JUDGE_LLM` is still an Ollama model. Set both to `gpt-6-luna` in `.env` and restart the kernel |
+| `401 Unauthorized` from the judge (option C) | OpenAI calls go through MyGPT, so set `MYGPT_USERNAME` and `MYGPT_PASSWORD` in `.env` |
+| Judge labels differ from the instructor's | Expected with option C: `gpt-6-luna` is a different judge from `llama3`. Check κ against your own hand labels |
 
 ## Going further
 

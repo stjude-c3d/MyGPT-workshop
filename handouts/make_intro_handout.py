@@ -161,17 +161,19 @@ def story():
               "platform. It answers questions from <i>your</i> library of publications, cites the exact "
               "source passages, and reports how much to trust each answer with three scores: question "
               "relevance (<b>QRS</b>), answer relevance (<b>ARS</b>) and hallucination index (<b>HI</b>). "
-              "Everything runs on your own laptop, so your documents never leave it.<br/><br/>"
+              "By default everything runs on your own laptop, so your documents never leave it.<br/><br/>"
               "In this workshop you take MyGPT from install to evaluation: build a library, script it, "
               "benchmark it, tune its confidence scores for your field, and plug it into an AI coding "
               "assistant. Each module’s output feeds the next.")
     top = intro
 
     before = checklist([
-        "Laptop with <b>16 GB RAM</b> (8 GB minimum) and <b>25 GB</b> free disk",
-        "<b>Docker Desktop</b>, <b>Ollama</b>, Git, VS Code + GitHub Copilot, uv",
-        "Models pulled: <font face='Courier'>ollama pull nomic-embed-text</font> and "
-        "<font face='Courier'>ollama pull llama3</font>",
+        "<b>Docker Desktop</b>, Git, VS Code + GitHub Copilot, uv",
+        "Pick where the models run: <b>A</b> Ollama on your laptop (16 GB RAM, 25 GB disk; "
+        "<font face='Courier'>ollama pull nomic-embed-text</font> and <font face='Courier'>llama3</font>) · "
+        "<b>B</b> St. Jude Ollama server (St. Jude staff; St. Jude Wi-Fi or Cloudflare on) · "
+        "<b>C</b> OpenAI API (your own key, API billing on)",
+        "Smaller laptop? Options B and C need no model downloads",
     ], width=3.2 * inch)
     links = Table([[P(f"<b>{a}</b><br/><font face='Courier' size='7.2'>{b}</font>", "cell")] for a, b in [
         ("Workshop", "github.com/stjude-c3d/MyGPT-workshop"),
@@ -202,7 +204,7 @@ def story():
                                   ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                                   ("LINEBEFORE", (1, 0), (1, 0), 0.5, RULE)]))
     bottom = Table([[[section("Before you arrive", RED), before, Spacer(1, 6),
-                      P("Full setup steps are in SETUP.md. Pull the models <b>before</b> the day: "
+                      P("Full setup steps are in SETUP.md. Option A: pull the models <b>before</b> the day; "
                         "conference Wi-Fi is too slow for multi-GB downloads.", "small")],
                      [section("Resources", BLUE), links]]],
                    colWidths=[CONTENT_W / 2, CONTENT_W / 2])

@@ -20,7 +20,7 @@ connect it to an AI coding assistant through MCP.
 
 | # | Module | Time | Format |
 |---|---|---|---|
-| 0 | [Prerequisites](SETUP.md) — install tools and pull Ollama models | 20 min, at home | Checklist |
+| 0 | [Prerequisites](SETUP.md) — install tools and choose where the models run | 20 min, at home | Checklist |
 | 1 | [Install MyGPT and build a library](01-install-and-build-library/README.md) | 30 min | README + worksheet |
 | 2 | [Query the library through the backend API](02-query-via-api/README.md) | 20 min | Notebook + script |
 | 3 | [Build an evaluation dataset](03-build-evaluation-dataset/README.md) | 30 min | 2 notebooks |
@@ -48,7 +48,7 @@ the scored PubMedQA run published in MyGPT-evaluations. You can pick up at any m
 ```
 MyGPT-workshop/
 ├── README.md                    # this file
-├── SETUP.md                     # laptop prerequisites and Ollama models
+├── SETUP.md                     # laptop prerequisites and model options
 ├── compose.yaml                 # starts JupyterLab in Docker (prebuilt image from ghcr.io)
 ├── Dockerfile                   # how the workshop image is built
 ├── requirements.txt / .lock     # Python packages (the .lock pins exact versions for the image)
@@ -72,8 +72,8 @@ Start with [Module 1](01-install-and-build-library/README.md) to install MyGPT a
 build the library. JupyterLab is first needed in module 2; follow its
 [container setup](02-query-via-api/README.md#start-the-workshop-container) then.
 
-MyGPT and Ollama run on your laptop; JupyterLab runs in the
-`ghcr.io/stjude-c3d/mygpt-workshop` container and talks to them.
+MyGPT runs on your laptop; JupyterLab runs in the `ghcr.io/stjude-c3d/mygpt-workshop`
+container and talks to it. By default Ollama also runs on your laptop (option A):
 
 ```
 your laptop
@@ -81,6 +81,11 @@ your laptop
 ├── Ollama (native app)      :11434 ◄──┤ host.docker.internal
 └── mygpt-workshop (Docker)  :8888  ───┘  JupyterLab, your clone mounted at /workspace
 ```
+
+If your laptop is below the requirements in [SETUP.md](SETUP.md#choose-where-the-models-run),
+the models run elsewhere instead: on the St. Jude Ollama server (option B, St. Jude
+employees) or through the OpenAI API (option C, your own key). MyGPT and JupyterLab
+stay on your laptop either way.
 
 Can't use Docker? See [Module 2 → Alternative: local Python](02-query-via-api/README.md#alternative-local-python).
 

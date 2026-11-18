@@ -113,10 +113,10 @@ def page1():
                   ("15–20", "CLI + checkpoint", TEAL)])]
 
     setup = [
-        ("Library from module 1 exists", "MyGPT home page shows <b>workshop-library-A</b>; MyGPT + Ollama running"),
+        ("Library from module 1 exists", "MyGPT home page shows <b>workshop-library-A</b>; MyGPT + your models running"),
         ("Edit <font face='Courier'>.env</font>",
          "<font face='Courier'>MYGPT_DATASET=workshop-library-A</font>, MYGPT_USERNAME, MYGPT_PASSWORD "
-         "— leave the URLs unchanged"),
+         "— leave the URLs unchanged. Option B or C (SETUP.md): also set your model lines"),
         ("Start the container", "<font face='Courier'>docker compose pull</font> then "
                                 "<font face='Courier'>docker compose up -d</font>"),
         ("Open JupyterLab", "<font face='Courier'>http://localhost:8888/lab?token=mygpt-workshop</font>"),
@@ -263,7 +263,7 @@ def page2():
         ("Connection refused", "In the container MyGPT is host.docker.internal:8000; check MyGPT is up"),
         ("401 Unauthorized", "Wrong MYGPT_USERNAME / PASSWORD; rerun create_superuser.sh"),
         ("400 from get_context", "MYGPT_DATASET or embedding model doesn’t match the library"),
-        ("Request times out", "LLM too big for RAM: set MYGPT_LLM to a smaller model"),
+        ("Request times out", "A: smaller MYGPT_LLM · B: St. Jude Wi-Fi or Cloudflare on · C: check OpenAI key and billing"),
     ])
     story += [Spacer(1, 6), side_by_side(cp, tr, section("Checkpoint", INK), section("Stuck?", ORANGE))]
     return story

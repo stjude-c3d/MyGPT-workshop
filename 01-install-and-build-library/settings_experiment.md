@@ -8,7 +8,7 @@ compare results at the end.
 |---|---|---|---|
 | Chunk size | 1000 | 750 | Do precise facts get higher QRS? Are answers more fragmented? |
 | Overlap | YES | NO | Are answers that span two chunks now incomplete? |
-| Embedding model | nomic-embed-text | bge-m3 | Change in QRS for domain terms |
+| Embedding model | nomic-embed-text (OpenAI: text-embedding-3-small) | bge-m3 (OpenAI: text-embedding-3-large) | Change in QRS for domain terms |
 | Keyword search | BM25 on | BM25 off | Questions with IDs, gene names or acronyms |
 | Reranker | off | on | Source order, answer quality, latency |
 | Max chunks (chat setting, no rebuild needed) | 5 | 10 | Longer answers? More noise? Change in ARS? |

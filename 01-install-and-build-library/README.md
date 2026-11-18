@@ -2,14 +2,16 @@
 
 ## Objectives
 
-- Get MyGPT (UI, backend, Ollama) running on your laptop.
+- Get MyGPT (UI, backend) running on your laptop, connected to your models: Ollama on
+  your laptop, the St. Jude Ollama server, or the OpenAI API.
 - Build a document library from your own files.
 - Learn how each pipeline setting changes what MyGPT retrieves and how confident it is.
 
 ## Before you start
 
-Finish the prerequisites in [SETUP.md](../SETUP.md), then install MyGPT and prepare
-the BioASQ documents as described below.
+Finish the prerequisites in [SETUP.md](../SETUP.md), including choosing where the
+models run (option A, B or C), then install MyGPT and prepare the BioASQ documents as
+described below.
 
 ### Install MyGPT
 
@@ -18,6 +20,31 @@ Follow the MyGPT installation guide for your OS, using the **pre-built images** 
 - macOS: <https://github.com/stjude/MyGPT/blob/main/installation/macOS/README.md>
 - Linux: <https://github.com/stjude/MyGPT/blob/main/installation/linux/README.md>
 - Windows: <https://github.com/stjude/MyGPT/blob/main/installation/windows/README.md>
+
+The guide has you copy `.env_backend.example` to `.env_backend` in the MyGPT folder and
+fill in its secrets ([Configure backend secrets](https://github.com/stjude/MyGPT/blob/main/backend/README.md#configure-backend-secrets)).
+In the same file, set your model option **before** starting the containers:
+
+| Option | Set in MyGPT's `.env_backend` |
+|---|---|
+| A. Ollama on your laptop | Nothing to change: `OLLAMA_SERVER=http://host.docker.internal:11434` and `OPENAI_API_KEY=` (empty) |
+| B. St. Jude Ollama server | `OLLAMA_SERVER=<St. Jude Ollama server URL>`, and leave `OPENAI_API_KEY=` empty |
+| C. OpenAI API | `OPENAI_API_KEY=<your key>` ([OpenAI LLMs](https://github.com/stjude/MyGPT/blob/main/backend/README.md#openai-llms)) |
+
+With a non-empty `OPENAI_API_KEY`, MyGPT switches to OpenAI mode: the model pickers show
+only `gpt-6-luna` and the OpenAI embedding models. Keep the key in `.env_backend` only,
+never in `.env_frontend`, a screenshot or Git.
+
+If MyGPT is already running when you change `.env_backend`, restart it so the new value
+is loaded:
+
+```bash
+cd MyGPT/installation/macOS/prebuilt_images   # use your OS folder
+bash stop_docker.sh && bash run_docker.sh
+```
+
+On Windows, run `docker compose down` then `docker compose up -d frontend` in the folder
+that holds MyGPT's `docker-compose.yml`.
 
 Create a backend user for signing in to MyGPT and the API in modules 2–4:
 
@@ -43,8 +70,9 @@ The BioASQ PDFs and test questions are included in `data/BioASQ/`. Upload the PD
 `data/BioASQ/pdfs/` when creating your library. The test questions are in
 `data/BioASQ/questions_all_164.csv`.
 
-Choose an embedding model you pulled in [SETUP.md](../SETUP.md) under **Upload →
-Advanced** when creating the library. It can't be changed after the library is built.
+Choose the embedding model under **Upload → Advanced** when creating the library:
+`nomic-embed-text` for options A and B, `text-embedding-3-small` for option C. It can't
+be changed after the library is built.
 
 | Time | Activity |
 |---|---|
@@ -56,7 +84,8 @@ Advanced** when creating the library. It can't be changed after the library is b
 ## Concepts
 
 MyGPT has three parts: a **React UI**, a **Django backend** that does chunking,
-embedding, retrieval and scoring, and an **Ollama LLM server**. Building a library
+embedding, retrieval and scoring, and a **model server** for the LLM and embeddings:
+Ollama on your laptop, the St. Jude Ollama server, or the OpenAI API. Building a library
 runs a document through the retrieval pipeline. At question time, MyGPT retrieves
 relevant chunks, generates an answer, and scores its relevance and hallucination risk.
 
@@ -88,9 +117,15 @@ The pre-calculated QC/AC cutoffs for each embedding model are in the
 
 ```bash
 docker ps                          # MyGPT frontend, backend and database should be "Up"
-curl -s http://localhost:11434     # "Ollama is running"
-ollama list                        # nomic-embed-text and llama3 (or gpt-oss) listed
 ```
+
+Then check your model option:
+
+| Option | Check | Expect |
+|---|---|---|
+| A. Ollama on your laptop | `curl -s http://localhost:11434` then `ollama list` | "Ollama is running"; `nomic-embed-text` and `llama3` (or `gpt-oss`) listed |
+| B. St. Jude Ollama server | `curl -s <server URL>` then `curl -s <server URL>/api/tags` | "Ollama is running"; `nomic-embed-text` and `llama3` in the model list |
+| C. OpenAI API | The LLM picker in MyGPT's chat settings | Only `gpt-6-luna` is offered |
 
 Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 <http://localhost:3000> or <http://localhost>) and sign in.
@@ -101,7 +136,8 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 2. Name it `workshop-library-A`; module 2 will use this name in `.env`.
 3. Choose **Advanced settings** and use the baseline values:
    - Chunking: fixed-size, **1000** characters, overlap **Yes**
-   - Embedding model: **nomic-embed-text**
+   - Embedding model: **nomic-embed-text** (option C: **text-embedding-3-small**; MyGPT
+     calibrates it on first use, so the first upload takes longer)
    - BM25: **on**, reranker: **qnli-electra-base (default)**
 4. Upload your documents and wait until indexing finishes.
 5. Ask 3 questions from `data/BioASQ/questions_all_164.csv`, or
@@ -111,7 +147,9 @@ Open the MyGPT UI (the URL is printed by `run_docker.sh`, usually
 
 Work through [settings_experiment.md](settings_experiment.md). Build **one** extra
 library with one setting changed, ask the same questions, and record the scores.
-Change one variable at a time, so any difference comes from that setting.
+Change one variable at a time, so any difference comes from that setting. With option C,
+compare `text-embedding-3-small` with `text-embedding-3-large` instead of
+`nomic-embed-text` with `bge-m3`.
 
 ## Checkpoint
 
@@ -125,7 +163,11 @@ Change one variable at a time, so any difference comes from that setting.
 | Symptom | Fix |
 |---|---|
 | UI loads but upload fails | Backend not ready. Run `docker logs <backend-container>` and wait for migrations to finish |
-| `connection refused` on port 11434 | Start the Ollama app, or run `ollama serve` |
+| `connection refused` on port 11434 (option A) | Start the Ollama app, or run `ollama serve` |
+| St. Jude server unreachable (option B) | Connect to St. Jude Wi-Fi, or turn on Cloudflare if you're off-site. Then check the URL in `.env_backend` (`OLLAMA_SERVER`) and test it with `curl`; restart MyGPT after any change |
+| OpenAI errors: authentication, quota or billing (option C) | Check `OPENAI_API_KEY` in `.env_backend` and that API billing is enabled; MyGPT reports the error and does not fall back to Ollama |
+| Model pickers show only OpenAI models | `OPENAI_API_KEY` is set. For option A or B, empty it and restart MyGPT |
+| Changed `.env_backend` but nothing happened | Restart MyGPT with `stop_docker.sh` then `run_docker.sh`; a plain container restart doesn't reload the file |
 | Indexing is very slow | Give Docker more CPU/RAM; use fewer or smaller documents; use `nomic-embed-text` |
 | QRS is always 0 | Embedding model and QC cutoffs don't match. Use defaults or raise QCworst ([FAQ 18](https://github.com/stjude/MyGPT/blob/main/FAQs.md)) |
 | Scanned PDFs return nothing | MyGPT only extracts the text layer. Run OCR first |

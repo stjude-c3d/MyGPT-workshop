@@ -124,6 +124,11 @@ the server's `env` block in `.vscode/mcp.json`:
 "MYGPT_MODEL_ID": "llama3:latest"
 ```
 
+If your MyGPT uses the OpenAI API (model option C in [SETUP.md](../SETUP.md#choose-where-the-models-run)),
+set `"MYGPT_MODEL_ID": "gpt-6-luna"` instead. Path A works with every model option:
+Copilot uses its own LLM, and the Turing Way pages come from GitHub or the offline
+snapshot.
+
 **Path B — Docker, full Turing Way RAG stack (optional).** This runs the MCP server over
 HTTP and gives it its own MyGPT backend with the full Turing Way corpus indexed. Follow
 Team 20's [docs/DOCKER.md](https://github.com/stjude-biohackathon/KIDS26-Team20/blob/main/docs/DOCKER.md).
@@ -136,6 +141,15 @@ LEARNING_ASSISTANT_HOST_PORT=8100 MYGPT_BACKEND_HOST_PORT=8101 docker compose up
 Then point Copilot at the HTTP endpoint with
 [`examples/vscode-mcp-http.json`](examples/vscode-mcp-http.json) (copy it to
 `.vscode/mcp.json`). Check the server at <http://127.0.0.1:8100/health>.
+
+Path B's MyGPT embeds the handbook with `nomic-embed-text` from Ollama; it doesn't need
+an Ollama LLM. By model option:
+
+| Model option | Path B |
+|---|---|
+| A. Ollama on your laptop | Works as is (`ollama pull nomic-embed-text`) |
+| B. St. Jude Ollama server | Add `MYGPT_OLLAMA_URL=<St. Jude Ollama server URL>` to the `docker compose` command |
+| C. OpenAI API | Not supported. Use Path A, or install Ollama with only `nomic-embed-text` (about 270 MB) |
 
 ### Step 2 — Load the skills into Copilot (3 min)
 

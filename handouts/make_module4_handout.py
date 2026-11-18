@@ -103,7 +103,7 @@ def page1():
                                     "<b>163 BioASQ questions</b> judged against ground truth, the same set for "
                                     "everyone"),
         ("Expect the instructor’s numbers", "Your values should be close to the grey instructor values; small "
-                                            "differences in answers or judge labels shift them a little"),
+                                            "differences shift them a little. Option C (OpenAI) uses other models, so expect different numbers"),
         ("No benchmark?", "Set <font face='Courier'>FORCE_FALLBACK = True</font>: PubMedQA run from "
                           "MyGPT-evaluations"),
         ("Open the notebook", "<font face='Courier'>04-recalibrate-weights/04_sensitivity_analysis.ipynb</font> "

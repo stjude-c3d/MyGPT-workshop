@@ -15,7 +15,9 @@ Usage
 
 from __future__ import annotations
 
+import json
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +42,28 @@ RAG_PROMPT = (
     "### QUESTION ###\n{question}\n\n"
     "### ANSWER ###\n"
 )
+
+
+def is_openai_model(model: str) -> bool:
+    """True for models MyGPT serves through the OpenAI API (SETUP.md option C).
+
+    MyGPT routes `gpt-6-luna` and any `openai:<model-id>` to OpenAI. `gpt-oss:20b` and other
+    names with an Ollama tag stay on Ollama.
+    """
+    name = (model or "").strip().lower()
+    return name.startswith("openai:") or (name.startswith("gpt-") and not name.startswith("gpt-oss"))
+
+
+def extract_json(text: str) -> str:
+    """Return the first JSON object in text, e.g. from a reply wrapped in ```json fences."""
+    match = re.search(r"\{.*\}", text or "", re.DOTALL)
+    if match:
+        try:
+            json.loads(match.group(0))
+            return match.group(0)
+        except json.JSONDecodeError:
+            pass
+    return text
 
 
 def outputs_dir() -> Path:
@@ -70,6 +94,7 @@ class MyGPTClient:
         self.timeout = timeout
         self.session = requests.Session()
         self.access_token: str | None = None
+        self._credentials: tuple[str, str] | None = None
 
     # ------------------------------------------------------------------ setup
     @classmethod
@@ -85,8 +110,10 @@ class MyGPTClient:
             ollama_url=env("OLLAMA_URL", "http://localhost:11434"),
         )
         user, password = env("MYGPT_USERNAME"), env("MYGPT_PASSWORD")
-        if authenticate and user and password:
-            client.authenticate(user, password)
+        if user and password:
+            client._credentials = (user, password)  # lets ollama() sign in later for OpenAI models
+            if authenticate:
+                client.authenticate(user, password)
         return client
 
     def authenticate(self, username: str, password: str) -> None:
@@ -246,11 +273,30 @@ class MyGPTClient:
             )
         return row
 
-    # ------------------------------------------------------- direct Ollama use
+    # ------------------------------------------- LLM calls outside the RAG loop
+    def llm_route(self, model: str | None = None) -> str:
+        """Where ollama() sends a prompt for this model, for printing in the notebooks."""
+        if is_openai_model(model or self.llm):
+            return f"MyGPT backend → OpenAI ({self.base_url})"
+        return f"Ollama ({self.ollama_url})"
+
     def ollama(self, prompt: str, model: str | None = None, temperature: float = 0.0, json_mode: bool = False) -> str:
-        """Call Ollama's /api/generate directly (question generation, LLM judge)."""
+        """Send a prompt to the LLM without retrieval (question generation, LLM judge).
+
+        Ollama models (options A and B in SETUP.md) are called directly at OLLAMA_URL.
+        OpenAI models (option C) go through the MyGPT backend, which holds the API key; with
+        json_mode the JSON object is pulled out of the reply, since OpenAI has no Ollama
+        JSON mode here.
+        """
+        model = model or self.llm
+        if is_openai_model(model):
+            if not self.access_token and self._credentials:
+                self.authenticate(*self._credentials)
+            reply = self.generate(prompt, temperature=temperature, model=model)
+            return extract_json(reply) if json_mode else reply
+
         payload: dict[str, Any] = {
-            "model": model or self.llm,
+            "model": model,
             "prompt": prompt,
             "stream": False,
             "options": {"temperature": temperature},

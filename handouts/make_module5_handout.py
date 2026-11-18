@@ -129,12 +129,15 @@ def page2():
                        "→ click <b>Start</b> above <font face='Courier'>stjude-learning-assistant</font> → Copilot Chat "
                        "→ <b>Agent</b> → tools icon. To reach your module 1 MyGPT, add "
                        "<font face='Courier'>\"MYGPT_BASE_URL\": \"http://localhost:8000\"</font> to the server’s "
-                       "<font face='Courier'>env</font>.", "cell")],
+                       "<font face='Courier'>env</font> (option C: <font face='Courier'>\"MYGPT_MODEL_ID\": \"gpt-6-luna\"</font>).",
+                       "cell")],
                     [P("<b>Path B — Docker, full Turing Way RAG (optional).</b> "
                        "<font face='Courier'>LEARNING_ASSISTANT_HOST_PORT=8100 MYGPT_BACKEND_HOST_PORT=8101 docker "
                        "compose up --build</font>, then copy <font face='Courier'>examples/vscode-mcp-http.json</font> "
                        "to <font face='Courier'>.vscode/mcp.json</font>. Health: "
-                       "<font face='Courier'>http://127.0.0.1:8100/health</font>", "cell")]],
+                       "<font face='Courier'>http://127.0.0.1:8100/health</font>. Needs Ollama’s nomic-embed-text "
+                       "(option B: add <font face='Courier'>MYGPT_OLLAMA_URL=&lt;server URL&gt;</font>; not for "
+                       "option C).", "cell")]],
                    colWidths=[CONTENT_W])
     path_a.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), TINT),
                                 ("LINEBELOW", (0, 0), (-1, 0), 0.8, colors.white),

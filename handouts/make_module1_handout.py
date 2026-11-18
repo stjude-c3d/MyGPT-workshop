@@ -39,7 +39,7 @@ def page1():
 
     objectives = [
         P("<b>By the end of this module you will:</b>"),
-        P("① have MyGPT (UI, backend, Ollama) running on your laptop"),
+        P("① have MyGPT running on your laptop, connected to your models (option A, B or C)"),
         P("② have built a document library from the BioASQ PDFs or your own files"),
         P("③ know how each pipeline setting changes what MyGPT retrieves and how confident it is"),
     ]
@@ -79,22 +79,33 @@ def page1():
 
     # Step 1
     checks = [
-        ("docker ps", "MyGPT frontend, backend and database show <b>Up</b>"),
-        ("curl -s http://localhost:11434", "prints <b>Ollama is running</b>"),
-        ("ollama list", "embedding model + LLM listed (nomic-embed-text, llama3 / gpt-oss)"),
+        ("<font face='Courier'>docker ps</font>", "MyGPT frontend, backend and database show <b>Up</b>"),
+        ("<b>A</b> · Ollama on laptop", "<font face='Courier'>curl -s http://localhost:11434</font> prints "
+                                      "<b>Ollama is running</b>; <font face='Courier'>ollama list</font> shows "
+                                      "nomic-embed-text, llama3"),
+        ("<b>B</b> · St. Jude server", "<font face='Courier'>curl -s &lt;server URL&gt;</font> prints "
+                                       "<b>Ollama is running</b>; <font face='Courier'>&lt;URL&gt;/api/tags</font> "
+                                       "lists nomic-embed-text, llama3"),
+        ("<b>C</b> · OpenAI API", "MyGPT’s LLM picker offers only <b>gpt-6-luna</b> (OPENAI_API_KEY is set)"),
         ("MyGPT UI", "opens (usually localhost:3000 or localhost) and you can sign in"),
     ]
     step1 = grid([["", P("Run / open", "head"), P("You should see", "head")]]
-                 + [[Box(), P(c, "mono"), P(e, "cell")] for c, e in checks],
-                 [0.25 * inch, 2.4 * inch, CONTENT_W - 2.65 * inch], header_color=BLUE)
-    story += [section("Step 1 — Check the stack", BLUE, "5 min"), step1]
+                 + [[Box(), P(c, "cell"), P(e, "cell")] for c, e in checks],
+                 [0.25 * inch, 1.65 * inch, CONTENT_W - 1.9 * inch], header_color=BLUE)
+    step1_note = P("Tick only your option’s row (A, B or C, chosen in SETUP.md). It is set in MyGPT’s "
+                   "<font face='Courier'>.env_backend</font>: <b>B</b> "
+                   "<font face='Courier'>OLLAMA_SERVER=&lt;URL&gt;</font>, <b>C</b> "
+                   "<font face='Courier'>OPENAI_API_KEY=&lt;key&gt;</font>. Restart MyGPT after editing it.",
+                   "small")
+    story += [section("Step 1 — Check the stack", BLUE, "5 min"), step1, step1_note]
 
     # Step 2
     baseline = [
         ("Library name", "<b>workshop-library-A</b>  (module 2 uses this name in .env)"),
         ("Documents", "data/BioASQ/pdfs/  (or your own files)"),
         ("Chunking", "Fixed-size, <b>1000</b> characters, overlap <b>Yes</b>"),
-        ("Embedding model", "<b>nomic-embed-text</b>  — cannot be changed after building"),
+        ("Embedding model", "<b>nomic-embed-text</b> (option C: <b>text-embedding-3-small</b>) — cannot be "
+                             "changed after building"),
         ("Keyword search / reranker", "BM25 <b>on</b>  ·  reranker <b>qnli-electra-base</b> (default)"),
     ]
     settings = grid([["", P("Upload → Advanced settings", "head"), P("Baseline value", "head")]]
@@ -141,7 +152,7 @@ def page2():
     exps = [
         ("Chunk size", "1000", "750", "Do precise facts get higher QRS? Are answers fragmented?"),
         ("Overlap", "Yes", "No", "Are answers that span two chunks now incomplete?"),
-        ("Embedding model", "nomic-embed-text", "bge-m3", "Change in QRS for domain terms"),
+        ("Embedding model", "nomic-embed-text<br/>(C: 3-small)", "bge-m3<br/>(C: 3-large)", "Change in QRS for domain terms"),
         ("Keyword search", "BM25 on", "BM25 off", "Questions with IDs, gene names or acronyms"),
         ("Reranker", "off", "on", "Source order, answer quality, latency"),
         ("Max chunks (no rebuild)", "5", "10", "Longer answers? More noise? Change in ARS?"),
@@ -165,9 +176,9 @@ def page2():
     story += [libb, Spacer(1, 6)]
 
     hdr = ["Question", "QRS A", "QRS B", "ARS A", "ARS B", "HI A", "HI B", "Better answer: A / B — why?"]
-    results = grid([[P(h, "head") for h in hdr]] + [[""] * 8 for _ in range(4)],
+    results = grid([[P(h, "head") for h in hdr]] + [[""] * 8 for _ in range(3)],
                    [1.75 * inch] + [0.48 * inch] * 6 + [CONTENT_W - 1.75 * inch - 2.88 * inch],
-                   header_color=TEAL, row_h=[None] + [23] * 4)
+                   header_color=TEAL, row_h=[None] + [22] * 3)
     story += [results]
 
     # reflect
@@ -190,7 +201,7 @@ def page2():
                               ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]))
     trouble = [
         ("Upload fails", "Backend still starting: docker logs &lt;backend&gt;, wait for migrations"),
-        ("Port 11434 refused", "Start the Ollama app, or run ollama serve"),
+        ("Model errors", "A: start Ollama · B: St. Jude Wi-Fi or Cloudflare on, check OLLAMA_SERVER · C: check OPENAI_API_KEY; then restart MyGPT"),
         ("Indexing very slow", "More Docker CPU/RAM; fewer documents; nomic-embed-text"),
         ("QRS always 0", "Embedding model and QC cutoffs don’t match: use defaults or raise QCworst"),
         ("Scanned PDF, no text", "MyGPT reads the text layer only: run OCR first"),

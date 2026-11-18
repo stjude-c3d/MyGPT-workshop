@@ -22,7 +22,17 @@ cp .env.example .env
 
 Set `MYGPT_DATASET=workshop-library-A`, `MYGPT_USERNAME`, and `MYGPT_PASSWORD` in `.env`.
 Leave the URLs unchanged; `compose.yaml` uses `host.docker.internal` to reach MyGPT and
-Ollama on your laptop. Then pull and start the workshop container:
+Ollama on your laptop. If your models don't run in Ollama on your laptop, also set the
+lines for your option from [SETUP.md](../SETUP.md#workshop-settings-for-options-b-and-c):
+
+| Option | Also set in `.env` |
+|---|---|
+| A. Ollama on your laptop | Nothing |
+| B. St. Jude Ollama server | `OLLAMA_URL` and `DOCKER_OLLAMA_URL` = the server URL |
+| C. OpenAI API | `MYGPT_LLM=gpt-6-luna`, `MYGPT_EMBEDDING_MODEL=text-embedding-3-small`, `JUDGE_LLM=gpt-6-luna` |
+
+`MYGPT_EMBEDDING_MODEL` must match the model `workshop-library-A` was built with in
+module 1. Then pull and start the workshop container:
 
 ```bash
 docker compose pull
@@ -115,7 +125,8 @@ calls. `client.ask(question)` runs all three steps and returns a single row of r
 | `Connection refused` / `Name or service not known` from the notebook | Inside the container, MyGPT is at `host.docker.internal:8000`, not `localhost`. Check that `client.base_url` shows that address and that MyGPT is up on your laptop (`curl localhost:8000/admin/`). If MyGPT runs elsewhere, set `DOCKER_MYGPT_BASE_URL` in `.env` and run `docker compose up -d` again |
 | `401 Unauthorized` | Wrong `MYGPT_USERNAME`/`MYGPT_PASSWORD`, or the user doesn't exist. Rerun `create_superuser.sh` |
 | `400` from `get_context` | `MYGPT_DATASET` doesn't match the library name exactly, or `MYGPT_EMBEDDING_MODEL` differs from the one used to build it |
-| Request times out | LLM is too large for your RAM. Switch `MYGPT_LLM` to a smaller model (`llama3:latest`, `llama3.2`) |
+| Request times out | Option A: the LLM is too large for your RAM. Switch `MYGPT_LLM` to a smaller model (`llama3:latest`, `llama3.2`), or move to option B or C ([SETUP.md](../SETUP.md#choose-where-the-models-run)). Option B: check you're on St. Jude Wi-Fi or have Cloudflare on, and can reach the St. Jude server |
+| Error mentioning OpenAI (option C) | Check `OPENAI_API_KEY` and API billing in MyGPT's `.env_backend`, and that `MYGPT_LLM=gpt-6-luna` in `.env` |
 | `save_answer` returns 500 | Call `get_context` for the same question first; `ask()` does this for you |
 
 ## Going further
