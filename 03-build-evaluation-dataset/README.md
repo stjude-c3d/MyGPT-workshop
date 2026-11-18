@@ -74,6 +74,11 @@ This optional step is not part of the 30-minute core exercise. It reuses the LLM
 validated in 03b and does not ask for more manual labels or another Cohen's κ check.
 
 3. **[03c_create_calibration_dataset.ipynb](03c_create_calibration_dataset.ipynb)**
+   - **Requires the full BioASQ library:** create a new MyGPT library containing all
+     PDFs in `data/BioASQ/pdfs/`, not just the `pdfs_70/` subset used in module 1.
+     Wait for indexing to finish, then set `MYGPT_DATASET` in `.env` to the new
+     library name before running 03c. Restart the notebook kernel if the client
+     was already initialized.
    - Load the original BioASQ questions and ground truths from
      `data/BioASQ/questions_all_164.csv` (the current file contains 163 complete rows).
    - Run every question through MyGPT, then apply the validated LLM judge against its
